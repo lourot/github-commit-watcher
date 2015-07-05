@@ -7,6 +7,11 @@ import github
 
 def _main():
     parser = argparse.ArgumentParser(description="watch GitHub commits easily")
+
+    credentials_option = "--credentials"
+    parser.add_argument(credentials_option,
+                        help="your GitHub login and password (e.g. 'AurelienLourot:password')")
+
     subparsers = parser.add_subparsers(help="available commands")
 
     descr = "list repos watched by a user"
@@ -29,7 +34,20 @@ def _main():
     since.add_argument("ss", help="second")
 
     args = parser.parse_args()
-    args.impl(github.Github(), args)
+    if args.credentials is not None:
+        credentials = args.credentials.split(":", 1)
+        hub = github.Github(credentials[0], credentials[1])
+    else:
+        hub = github.Github()
+
+    try:
+        args.impl(hub, args)
+    except github.GithubException as e:
+        if e.status == 401 and args.credentials is not None:
+            e.args += ("Bad credentials?",)
+        if e.status == 403 and args.credentials is None:
+            e.args += ("API rate limit exceeded? Use the %s option." % (credentials_option),)
+        raise
 
 def _watchlist(hub, args):
     """Implements 'watchlist' command.
