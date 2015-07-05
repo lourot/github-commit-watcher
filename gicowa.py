@@ -31,24 +31,42 @@ def _main():
     args = parser.parse_args()
     args.impl(github.Github(), args)
 
-def _watchlist(github, args):
+def _watchlist(hub, args):
     """Implements 'watchlist' command.
        Prints all watched repos of 'args.username'.
     """
-    for repo in github.get_user(args.username).get_subscriptions():
+    try:
+        user = hub.get_user(args.username)
+    except github.GithubException as e:
+        if e.status == 404:
+            e.args += ("%s user doesn't exist?" % (args.username),)
+        raise
+
+    for repo in user.get_subscriptions():
         print repo.full_name
 
-def _lastrepocommits(github, args):
+def _lastrepocommits(hub, args):
     """Implements 'lastrepocommits' command.
        Prints all commits of 'args.repo' with committer timestamp bigger than
        'args.YYYY,MM,DD,hh,mm,ss'.
     """
     since = datetime.datetime(int(args.YYYY), int(args.MM), int(args.DD), int(args.hh),
                               int(args.mm), int(args.ss))
-    repo = github.get_repo(args.repo)
+    try:
+        repo = hub.get_repo(args.repo)
+    except github.GithubException as e:
+        if e.status == 404:
+            e.args += ("%s repo doesn't exist?" % (args.repo),)
+        raise
+
     for i in repo.get_commits(since=since):
         commit = repo.get_git_commit(i.sha)
         print "%s - %s - %s" % (commit.committer.date, commit.committer.name, commit.message)
 
 if __name__ == "__main__":
-    _main()
+    try:
+        _main()
+    except Exception as e:
+        print "Oops, an error occured. " + " ".join(e.args)
+        print
+        raise
