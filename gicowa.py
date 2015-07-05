@@ -79,23 +79,23 @@ def _add_arguments_since_committer_timestamp(parser):
 
 def _watchlist(hub, args):
     """Implements 'watchlist' command.
-       Prints all watched repos of 'args.username'.
+    Prints all watched repos of 'args.username'.
     """
     for repo in _get_watchlist(hub, args.username):
         _print(repo if args.no_color else _red(repo))
 
 def _lastrepocommits(hub, args):
     """Implements 'lastrepocommits' command.
-       Prints all commits on 'args.repo' with committer timestamp bigger than
-       'args.YYYY,MM,DD,hh,mm,ss'.
+    Prints all commits on 'args.repo' with committer timestamp bigger than
+    'args.YYYY,MM,DD,hh,mm,ss'.
     """
     for commit in _get_last_commits(hub, args.repo, _args_to_datetime(args), args.no_color):
         _print(commit)
 
 def _lastwatchedcommits(hub, args):
     """Implements 'lastwatchedcommits' command.
-       Prints all commits on repos watched by 'args.username' with committer timestamp bigger than
-       'args.YYYY,MM,DD,hh,mm,ss'.
+    Prints all commits on repos watched by 'args.username' with committer timestamp bigger than
+    'args.YYYY,MM,DD,hh,mm,ss'.
     """
     for repo in _get_watchlist(hub, args.username):
         for commit in _get_last_commits(hub, repo, _args_to_datetime(args), args.no_color):
@@ -115,7 +115,7 @@ def _get_watchlist(hub, username):
 
 def _get_last_commits(hub, repo_full_name, since, no_color):
     """Returns list of all commits on 'repo_full_name' with committer timestamp bigger than 'since'.
-       Set 'no_color' to true to disable text coloring.
+    Set 'no_color' to true to disable text coloring.
     """
     try:
         repo = hub.get_repo(repo_full_name)
