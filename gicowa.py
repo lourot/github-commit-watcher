@@ -4,11 +4,6 @@
 import argparse
 import github
 
-def _watchlist(args):
-    hub = github.Github()
-    for repo in hub.get_user(args.username).get_subscriptions():
-        print repo.full_name
-
 def _main():
     parser = argparse.ArgumentParser(description="watch GitHub commits easily")
     subparsers = parser.add_subparsers(help="available commands")
@@ -19,7 +14,14 @@ def _main():
     parser_watchlist.add_argument("username", help="watcher's name (e.g. 'AurelienLourot')")
 
     args = parser.parse_args()
-    args.impl(args)
+    args.impl(github.Github(), args)
+
+def _watchlist(github, args):
+    """Implements 'watchlist' command.
+       Prints all watched repos of 'args.username'.
+    """
+    for repo in github.get_user(args.username).get_subscriptions():
+        print repo.full_name
 
 if __name__ == "__main__":
     _main()
