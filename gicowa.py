@@ -71,7 +71,7 @@ def _watchlist(hub, args):
        Prints all watched repos of 'args.username'.
     """
     for repo in _get_watchlist(hub, args.username):
-        print repo
+        print _red(repo)
 
 def _lastrepocommits(hub, args):
     """Implements 'lastrepocommits' command.
@@ -88,7 +88,7 @@ def _lastwatchedcommits(hub, args):
     """
     for repo in _get_watchlist(hub, args.username):
         for commit in _get_last_commits(hub, repo, _args_to_datetime(args)):
-            print "%s - %s" % (repo, commit)
+            print "%s - %s" % (_red(repo), commit)
 
 def _get_watchlist(hub, username):
     """Returns list of all watched repos of 'username'.
@@ -115,7 +115,7 @@ def _get_last_commits(hub, repo_full_name, since):
     result = []
     for i in repo.get_commits(since=since):
         commit = repo.get_git_commit(i.sha)
-        result.append("%s - %s - %s" % (commit.committer.date, commit.committer.name,
+        result.append("%s - %s - %s" % (_green(commit.committer.date), _blue(commit.committer.name),
                                         commit.message))
     return result
 
@@ -128,6 +128,21 @@ def _args_to_datetime(args):
     except ValueError as e:
         e.args += ("Timestamp malformed?",)
         raise
+
+def _red(text):
+    return _colored(text, 31)
+
+def _green(text):
+    return _colored(text, 32)
+
+def _blue(text):
+    return _colored(text, 34)
+
+def _colored(text, color):
+    """Returns 'text' with a color, i.e. bash and zsh would print the returned string in the given
+       color.
+    """
+    return "\033[" + str(color) + "m" + str(text) + "\033[0m"
 
 if __name__ == "__main__":
     try:
