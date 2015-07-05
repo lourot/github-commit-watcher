@@ -22,6 +22,9 @@ Add the following line to your `/etc/crontab`:
 **That's it.** As long as your machine is running you'll get e-mails when something gets pushed on
 a repo you're watching.
 
+> **NOTE:** the e-mails are likely to be considered as spam until you mark one as non-spam in your
+> e-mail client.
+
 ## Other/Advanced usage
 
 `gicowa` is a generic command-line tool with which you can make much more that just implementing
