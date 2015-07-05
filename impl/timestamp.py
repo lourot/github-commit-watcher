@@ -12,16 +12,22 @@ class Timestamp:
               ("ss"  , "second"))
 
     def __init__(self, obj=None):
-        """Builds from 'obj' having the members 'fields'.
+        """Builds from 'obj' having the members 'fields' or being a dictionary with these fields.
            Builds from current UTC time if no 'obj' provided.
         """
         now = datetime.datetime.utcnow()
         self.data = {}
         for field in Timestamp.fields:
-            self.data[field[0]] = getattr(obj, field[0]) if obj else getattr(now, field[1])
+            if obj is not None:
+                if isinstance(obj, dict):
+                    self.data[field[0]] = obj[field[0]]
+                else:
+                    self.data[field[0]] = getattr(obj, field[0])
+            else:
+                self.data[field[0]] = getattr(now, field[1])
 
     def __str__(self):
-        return " ".join([self.data[field[0]] for field in Timestamp.fields])
+        return str(self.to_datetime())
 
     def to_datetime(self):
         try:

@@ -8,6 +8,8 @@ from impl.output import Output as o
 from impl.persistence import Persistence as p
 from impl.timestamp import Timestamp
 
+_persist_option = "--persist"
+
 def _main():
     parser = argparse.ArgumentParser(description="watch GitHub commits easily")
 
@@ -20,7 +22,7 @@ def _main():
     parser.add_argument("--mailto",
         help="e-mail address to which the output should be sent (e.g. 'aurelien.lourot@gmail.com')")
 
-    parser.add_argument("--persist", action="store_true",
+    parser.add_argument(_persist_option, action="store_true",
         help="gicowa will keep track of the last commands run in %s" % (p.filename))
 
     subparsers = parser.add_subparsers(help="available commands")
@@ -78,10 +80,19 @@ def _add_argument_watcher_name(parser):
 def _add_arguments_since_committer_timestamp(parser):
     """Adds arguments corresponding to a "since" committer timestamp to an argparse parser.
     """
-    since = parser.add_argument_group(" ".join(zip(*Timestamp.fields)[0]) + " (since)",
-        "oldest committer UTC timestamp to consider (e.g. '2015 07 05 09 12 00')")
+    subparsers = parser.add_subparsers(help="oldest committer UTC timestamp to consider")
+
+    descr = "explicit"
+    parser_since = subparsers.add_parser("since", description=descr, help=descr)
+    since = parser_since.add_argument_group(" ".join(zip(*Timestamp.fields)[0]),
+                                            "(e.g. '2015 07 05 09 12 00')")
+    parser_since.set_defaults(sincelast=False)
     for field in Timestamp.fields:
         since.add_argument(field[0], help=field[1])
+
+    descr = "use last time run with %s" % (_persist_option)
+    parser_sincelast = subparsers.add_parser("sincelast", description=descr, help=descr)
+    parser_sincelast.set_defaults(sincelast=True)
 
 def _watchlist(hub, args):
     """Implements 'watchlist' command.
@@ -98,9 +109,16 @@ def _lastrepocommits(hub, args):
     Prints all commits on 'args.repo' with committer timestamp bigger than
     'args.YYYY,MM,DD,hh,mm,ss'.
     """
+    # FIXME this code is duplicated:
     now = Timestamp()
     command = args.command + " " + args.repo
-    since = Timestamp(args)
+    if not args.sincelast:
+        since = Timestamp(args)
+    else:
+        try:
+            since = Timestamp(p.get().timestamps[command])
+        except KeyError as e: # this command gets executed for the first time
+            since = now
     o.get().echo(command + " since " + str(since))
 
     for commit in _get_last_commits(hub, args.repo, since.to_datetime()):
@@ -114,9 +132,16 @@ def _lastwatchedcommits(hub, args):
     Prints all commits on repos watched by 'args.username' with committer timestamp bigger than
     'args.YYYY,MM,DD,hh,mm,ss'.
     """
+    # FIXME this code is duplicated:
     now = Timestamp()
     command = args.command + " " + args.username
-    since = Timestamp(args)
+    if not args.sincelast:
+        since = Timestamp(args)
+    else:
+        try:
+            since = Timestamp(p.get().timestamps[command])
+        except KeyError as e: # this command gets executed for the first time
+            since = now
     o.get().echo(command + " since " + str(since))
 
     for repo in _get_watchlist(hub, args.username):

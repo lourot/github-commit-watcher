@@ -5,7 +5,6 @@ implement this feature and much more.
 
 > **Under construction.** Basic features missing:
 >
-> * Remember last run's timestamp.
 > * Line to be added to cron table.
 
 ## Installation
@@ -16,13 +15,20 @@ implement this feature and much more.
 $ git clone https://github.com/AurelienLourot/github-commit-watcher.git
 ```
 
-Add the following line to your `.bashrc`:
+## Quick setup
+
+**TODO**
+
+## Usage
+
+`gicowa` is a generic command-line tool with which you can make much more that just implementing
+the use case depicted in the introduction. This section shows what it can.
+
+First of all, add the following line to your `.bashrc`:
 
 ```bash
 alias gicowa='/path/to/github-commit-watcher/gicowa.py'
 ```
-
-## Usage
 
 ### List repos watched by a user
 
@@ -38,8 +44,8 @@ AurelienLourot/github-commit-watcher
 ### List last commits on a repo
 
 ```
-$ gicowa lastrepocommits AurelienLourot/github-commit-watcher 2015 07 05 09 12 00
-lastrepocommits AurelienLourot/github-commit-watcher since 2015 07 05 09 12 00
+$ gicowa lastrepocommits AurelienLourot/github-commit-watcher since 2015 07 05 09 12 00
+lastrepocommits AurelienLourot/github-commit-watcher since 2015-07-05 09:12:00
 2015-07-05 10:46:27 - Aurelien Lourot - Minor cleanup.
 2015-07-05 09:39:01 - Aurelien Lourot - watchlist command implemented.
 2015-07-05 09:12:00 - Aurelien Lourot - argparse added.
@@ -48,8 +54,8 @@ lastrepocommits AurelienLourot/github-commit-watcher since 2015 07 05 09 12 00
 ### List last commits on repos watched by a user
 
 ```
-$ gicowa lastwatchedcommits AurelienLourot 2015 07 04 00 00 00
-lastwatchedcommits AurelienLourot since 2015 07 04 00 00 00
+$ gicowa lastwatchedcommits AurelienLourot since 2015 07 04 00 00 00
+lastwatchedcommits AurelienLourot since 2015-07-04 00:00:00
 AurelienLourot/crouton-emacs-conf - 2015-07-04 17:08:48 - Aurelien Lourot - Support for Del key.
 brillout/FasterWeb - 2015-07-04 16:38:55 - brillout - add README
 AurelienLourot/github-commit-watcher - 2015-07-05 10:46:27 - Aurelien Lourot - Minor cleanup.
@@ -58,13 +64,27 @@ AurelienLourot/github-commit-watcher - 2015-07-05 09:12:00 - Aurelien Lourot - a
 AurelienLourot/github-commit-watcher - 2015-07-05 09:07:14 - AurelienLourot - Initial commit
 ```
 
+### List last commits since last run
+
+Any listing command taking a `since <timestamp>` argument takes also a `sincelast` one. It will then
+use the time where that same command has been run for the last time on that machine with the option
+`--persist`. This option makes `gicowa` remember the last execution time of each command in
+`~/.gicowa`.
+
+```
+$ gicowa --persist lastwatchedcommits AurelienLourot sincelast
+lastwatchedcommits AurelienLourot since 2015-07-05 20:17:46
+$ gicowa --persist lastwatchedcommits AurelienLourot sincelast
+lastwatchedcommits AurelienLourot since 2015-07-05 20:25:33
+```
+
 ### Send output by e-mail
 
 You can send the output of any command to yourself by e-mail:
 
 ```
-$ gicowa --no-color --mailto myself@mydomain.com lastwatchedcommits AurelienLourot 2015 07 04 00 00 00
-lastwatchedcommits AurelienLourot since 2015 07 04 00 00 00
+$ gicowa --no-color --mailto myself@mydomain.com lastwatchedcommits AurelienLourot since 2015 07 04 00 00 00
+lastwatchedcommits AurelienLourot since 2015-07-04 00:00:00
 AurelienLourot/crouton-emacs-conf - 2015-07-04 17:08:48 - Aurelien Lourot - Support for Del key.
 brillout/FasterWeb - 2015-07-04 16:38:55 - brillout - add README
 AurelienLourot/github-commit-watcher - 2015-07-05 10:46:27 - Aurelien Lourot - Minor cleanup.
