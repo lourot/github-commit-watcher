@@ -6,12 +6,12 @@ implement this feature and much more.
 > **Under construction.** Basic features missing:
 >
 > * Remember last run's timestamp.
-> * Send e-mail summary.
 > * Line to be added to cron table.
 
 ## Installation
 
 ```
+# sudo apt-get install sendmail
 # sudo pip install PyGithub
 $ git clone https://github.com/AurelienLourot/github-commit-watcher.git
 ```
@@ -54,6 +54,28 @@ AurelienLourot/github-commit-watcher - 2015-07-05 09:39:01 - Aurelien Lourot - w
 AurelienLourot/github-commit-watcher - 2015-07-05 09:12:00 - Aurelien Lourot - argparse added.
 AurelienLourot/github-commit-watcher - 2015-07-05 09:07:14 - AurelienLourot - Initial commit
 ```
+
+### Send output by e-mail
+
+You can send the output of any command to yourself by e-mail:
+
+```
+$ gicowa --no-color --mailto myself@mydomain.com lastwatchedcommits AurelienLourot 2015 07 04 00 00 00
+AurelienLourot/crouton-emacs-conf - 2015-07-04 17:08:48 - Aurelien Lourot - Support for Del key.
+brillout/FasterWeb - 2015-07-04 16:38:55 - brillout - add README
+AurelienLourot/github-commit-watcher - 2015-07-05 10:46:27 - Aurelien Lourot - Minor cleanup.
+AurelienLourot/github-commit-watcher - 2015-07-05 09:39:01 - Aurelien Lourot - watchlist command implemented.
+AurelienLourot/github-commit-watcher - 2015-07-05 09:12:00 - Aurelien Lourot - argparse added.
+AurelienLourot/github-commit-watcher - 2015-07-05 09:07:14 - AurelienLourot - Initial commit
+Sent by e-mail to myself@mydomain.com
+```
+
+> **NOTES:**
+>
+> * You probably want to use `--no-color` because your e-mail client is likely not to render the
+>   bash color escape sequences properly.
+> * The e-mails are likely to be considered as spam until you mark one as non-spam in your e-mail
+>   client.
 
 ## Initial Author
 
