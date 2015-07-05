@@ -5,7 +5,7 @@ import argparse
 import datetime
 import github
 from impl import mail
-from impl import output
+from impl.output import Output as o
 
 def _main():
     parser = argparse.ArgumentParser(description="watch GitHub commits easily")
@@ -42,7 +42,7 @@ def _main():
 
     args = parser.parse_args()
 
-    output.o.colored = not args.no_color
+    o.get().colored = not args.no_color
 
     if args.credentials is not None:
         credentials = args.credentials.split(":", 1)
@@ -59,9 +59,9 @@ def _main():
             e.args += ("API rate limit exceeded? Use the %s option." % (credentials_option),)
         raise
 
-    if args.mailto is not None and output.o.echoed != "":
-        mail.send_result(args.command, output.o.echoed, args.mailto)
-        output.o.echo("Sent by e-mail to %s" % (args.mailto))
+    if args.mailto is not None and o.get().echoed != "":
+        mail.send_result(args.command, o.get().echoed, args.mailto)
+        o.get().echo("Sent by e-mail to %s" % (args.mailto))
 
 def _add_argument_watcher_name(parser):
     """Adds an argument corresponding to a watcher's user name to an argparse parser.
@@ -85,7 +85,7 @@ def _watchlist(hub, args):
     Prints all watched repos of 'args.username'.
     """
     for repo in _get_watchlist(hub, args.username):
-        output.o.echo(output.o.red(repo))
+        o.get().echo(o.get().red(repo))
 
 def _lastrepocommits(hub, args):
     """Implements 'lastrepocommits' command.
@@ -93,7 +93,7 @@ def _lastrepocommits(hub, args):
     'args.YYYY,MM,DD,hh,mm,ss'.
     """
     for commit in _get_last_commits(hub, args.repo, _args_to_datetime(args)):
-        output.o.echo(commit)
+        o.get().echo(commit)
 
 def _lastwatchedcommits(hub, args):
     """Implements 'lastwatchedcommits' command.
@@ -102,7 +102,7 @@ def _lastwatchedcommits(hub, args):
     """
     for repo in _get_watchlist(hub, args.username):
         for commit in _get_last_commits(hub, repo, _args_to_datetime(args)):
-            output.o.echo("%s - %s" % (output.o.red(repo), commit))
+            o.get().echo("%s - %s" % (o.get().red(repo), commit))
 
 def _get_watchlist(hub, username):
     """Returns list of all watched repos of 'username'.
@@ -129,8 +129,8 @@ def _get_last_commits(hub, repo_full_name, since):
     result = []
     for i in repo.get_commits(since=since):
         commit = repo.get_git_commit(i.sha)
-        result.append("%s - %s - %s" % (output.o.green(commit.committer.date),
-                                        output.o.blue(commit.committer.name), commit.message))
+        result.append("%s - %s - %s" % (o.get().green(commit.committer.date),
+                                        o.get().blue(commit.committer.name), commit.message))
     return result
 
 def _args_to_datetime(args):

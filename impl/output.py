@@ -2,9 +2,23 @@
 # -*- coding: utf-8 -*-
 
 class Output:
+    __instance = None # Singleton
+
+    @classmethod
+    def get(cls):
+        if Output.__instance is None:
+            Output()
+        assert Output.__instance is not None
+        return Output.__instance
+
     def __init__(self):
+        if Output.__instance is not None:
+            assert False, "I'm a singleton."
+        Output.__instance = self
+
         # Contains at any time the whole text that has been echoed by this instance:
         self.colored = True
+
         self.echoed = ""
 
     def echo(self, text):
@@ -27,6 +41,3 @@ class Output:
         """
         text = str(text)
         return text if not self.colored else "\033[" + str(color) + "m" + text + "\033[0m"
-
-# Singleton:
-o = Output()
