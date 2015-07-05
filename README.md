@@ -3,10 +3,6 @@
 GitHub's *Watch* feature doesn't send notifications when commits are pushed. This script aims to
 implement this feature and much more.
 
-> **Under construction.** Basic features missing:
->
-> * Line to be added to cron table.
-
 ## Installation
 
 ```
@@ -17,9 +13,16 @@ $ git clone https://github.com/AurelienLourot/github-commit-watcher.git
 
 ## Quick setup
 
-**TODO**
+Add the following line to your `/etc/crontab`:
 
-## Usage
+```
+0 * * * * root /path/to/github-commit-watcher/gicowa.py --persist --no-color --mailto myself@mydomain.com lastwatchedcommits MyGitHubUsername sincelast > /tmp/gicowa 2>&1
+```
+
+**That's it.** As long as your machine is running you'll get e-mails when something gets pushed on
+a repo you're watching.
+
+## Other/Advanced usage
 
 `gicowa` is a generic command-line tool with which you can make much more that just implementing
 the use case depicted in the introduction. This section shows what it can.
