@@ -3,10 +3,9 @@
 
 import argparse
 import datetime
-from email.mime.text import MIMEText
 import github
+from impl import mail
 from impl import output
-import smtplib
 
 def _main():
     parser = argparse.ArgumentParser(description="watch GitHub commits easily")
@@ -61,7 +60,8 @@ def _main():
         raise
 
     if args.mailto is not None and output.o.echoed != "":
-        _send_by_email(output.o.echoed, args)
+        mail.send_result(args.command, output.o.echoed, args.mailto)
+        output.o.echo("Sent by e-mail to %s" % (args.mailto))
 
 def _add_argument_watcher_name(parser):
     """Adds an argument corresponding to a watcher's user name to an argparse parser.
@@ -142,19 +142,6 @@ def _args_to_datetime(args):
     except ValueError as e:
         e.args += ("Timestamp malformed?",)
         raise
-
-def _send_by_email(text, args):
-    """Sends 'text' by e-mail.
-    """
-    sender = "gicowa@lourot.com"
-    email = MIMEText(text)
-    email["Subject"] = "[gicowa] %s." % (args.command)
-    email["From"] = sender
-    email["To"] = args.mailto
-    smtp = smtplib.SMTP("localhost")
-    smtp.sendmail(sender, args.mailto, email.as_string())
-    smtp.quit()
-    output.o.echo("Sent by e-mail to %s" % (args.mailto))
 
 if __name__ == "__main__":
     try:
