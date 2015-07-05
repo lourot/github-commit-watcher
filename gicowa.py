@@ -19,7 +19,7 @@ def _main():
     parser_watchlist.set_defaults(impl=_watchlist)
     _add_argument_watcher_name(parser_watchlist)
 
-    descr = "list last commits of a repo"
+    descr = "list last commits on a repo"
     parser_lastrepocommits = subparsers.add_parser("lastrepocommits", description=descr, help=descr)
     parser_lastrepocommits.set_defaults(impl=_lastrepocommits)
     parser_lastrepocommits.add_argument("repo",
@@ -75,7 +75,7 @@ def _watchlist(hub, args):
 
 def _lastrepocommits(hub, args):
     """Implements 'lastrepocommits' command.
-       Prints all commits of 'args.repo' with committer timestamp bigger than
+       Prints all commits on 'args.repo' with committer timestamp bigger than
        'args.YYYY,MM,DD,hh,mm,ss'.
     """
     for commit in _get_last_commits(hub, args.repo, _args_to_datetime(args)):
@@ -83,7 +83,7 @@ def _lastrepocommits(hub, args):
 
 def _lastwatchedcommits(hub, args):
     """Implements 'lastwatchedcommits' command.
-       Prints all commits of repos watched by 'args.username' with committer timestamp bigger than
+       Prints all commits on repos watched by 'args.username' with committer timestamp bigger than
        'args.YYYY,MM,DD,hh,mm,ss'.
     """
     for repo in _get_watchlist(hub, args.username):
@@ -103,7 +103,7 @@ def _get_watchlist(hub, username):
     return [repo.full_name for repo in user.get_subscriptions()]
 
 def _get_last_commits(hub, repo_full_name, since):
-    """Returns list of all commits of 'repo_full_name' with committer timestamp bigger than 'since'.
+    """Returns list of all commits on 'repo_full_name' with committer timestamp bigger than 'since'.
     """
     try:
         repo = hub.get_repo(repo_full_name)
