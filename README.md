@@ -28,6 +28,7 @@ alias gicowa='/path/to/github-commit-watcher/gicowa.py'
 
 ```
 $ gicowa watchlist AurelienLourot
+watchlist AurelienLourot
 AurelienLourot/uncommitted
 AurelienLourot/crouton-emacs-conf
 brillout/FasterWeb
@@ -38,6 +39,7 @@ AurelienLourot/github-commit-watcher
 
 ```
 $ gicowa lastrepocommits AurelienLourot/github-commit-watcher 2015 07 05 09 12 00
+lastrepocommits AurelienLourot/github-commit-watcher since 2015 07 05 09 12 00
 2015-07-05 10:46:27 - Aurelien Lourot - Minor cleanup.
 2015-07-05 09:39:01 - Aurelien Lourot - watchlist command implemented.
 2015-07-05 09:12:00 - Aurelien Lourot - argparse added.
@@ -47,6 +49,7 @@ $ gicowa lastrepocommits AurelienLourot/github-commit-watcher 2015 07 05 09 12 0
 
 ```
 $ gicowa lastwatchedcommits AurelienLourot 2015 07 04 00 00 00
+lastwatchedcommits AurelienLourot since 2015 07 04 00 00 00
 AurelienLourot/crouton-emacs-conf - 2015-07-04 17:08:48 - Aurelien Lourot - Support for Del key.
 brillout/FasterWeb - 2015-07-04 16:38:55 - brillout - add README
 AurelienLourot/github-commit-watcher - 2015-07-05 10:46:27 - Aurelien Lourot - Minor cleanup.
@@ -61,6 +64,7 @@ You can send the output of any command to yourself by e-mail:
 
 ```
 $ gicowa --no-color --mailto myself@mydomain.com lastwatchedcommits AurelienLourot 2015 07 04 00 00 00
+lastwatchedcommits AurelienLourot since 2015 07 04 00 00 00
 AurelienLourot/crouton-emacs-conf - 2015-07-04 17:08:48 - Aurelien Lourot - Support for Del key.
 brillout/FasterWeb - 2015-07-04 16:38:55 - brillout - add README
 AurelienLourot/github-commit-watcher - 2015-07-05 10:46:27 - Aurelien Lourot - Minor cleanup.

@@ -5,6 +5,7 @@ import argparse
 import github
 from impl import mail
 from impl.output import Output as o
+from impl.persistence import Persistence as p
 from impl.timestamp import Timestamp
 
 def _main():
@@ -18,6 +19,9 @@ def _main():
 
     parser.add_argument("--mailto",
         help="e-mail address to which the output should be sent (e.g. 'aurelien.lourot@gmail.com')")
+
+    parser.add_argument("--persist", action="store_true",
+        help="gicowa will keep track of the last commands run in %s" % (p.filename))
 
     subparsers = parser.add_subparsers(help="available commands")
 
@@ -59,9 +63,12 @@ def _main():
             e.args += ("API rate limit exceeded? Use the %s option." % (credentials_option),)
         raise
 
-    if args.mailto is not None and o.get().echoed != "":
+    if args.mailto is not None and o.get().echoed.count("\n") > 1:
         mail.send_result(args.command, o.get().echoed, args.mailto)
         o.get().echo("Sent by e-mail to %s" % (args.mailto))
+
+    if args.persist:
+        p.get().save()
 
 def _add_argument_watcher_name(parser):
     """Adds an argument corresponding to a watcher's user name to an argparse parser.
@@ -80,6 +87,9 @@ def _watchlist(hub, args):
     """Implements 'watchlist' command.
     Prints all watched repos of 'args.username'.
     """
+    command = args.command + " " + args.username
+    o.get().echo(command)
+
     for repo in _get_watchlist(hub, args.username):
         o.get().echo(o.get().red(repo))
 
@@ -88,17 +98,33 @@ def _lastrepocommits(hub, args):
     Prints all commits on 'args.repo' with committer timestamp bigger than
     'args.YYYY,MM,DD,hh,mm,ss'.
     """
-    for commit in _get_last_commits(hub, args.repo, Timestamp(args).to_datetime()):
+    now = Timestamp()
+    command = args.command + " " + args.repo
+    since = Timestamp(args)
+    o.get().echo(command + " since " + str(since))
+
+    for commit in _get_last_commits(hub, args.repo, since.to_datetime()):
         o.get().echo(commit)
+
+    # Remember this last execution:
+    p.get().timestamps[command] = now.data
 
 def _lastwatchedcommits(hub, args):
     """Implements 'lastwatchedcommits' command.
     Prints all commits on repos watched by 'args.username' with committer timestamp bigger than
     'args.YYYY,MM,DD,hh,mm,ss'.
     """
+    now = Timestamp()
+    command = args.command + " " + args.username
+    since = Timestamp(args)
+    o.get().echo(command + " since " + str(since))
+
     for repo in _get_watchlist(hub, args.username):
-        for commit in _get_last_commits(hub, repo, Timestamp(args).to_datetime()):
+        for commit in _get_last_commits(hub, repo, since.to_datetime()):
             o.get().echo("%s - %s" % (o.get().red(repo), commit))
+
+    # Remember this last execution:
+    p.get().timestamps[command] = now.data
 
 def _get_watchlist(hub, username):
     """Returns list of all watched repos of 'username'.
