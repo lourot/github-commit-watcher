@@ -5,6 +5,7 @@ import argparse
 import datetime
 from email.mime.text import MIMEText
 import github
+from impl import output
 import smtplib
 
 def _main():
@@ -41,6 +42,9 @@ def _main():
     _add_arguments_since_committer_timestamp(parser_lastwatchedcommits)
 
     args = parser.parse_args()
+
+    output.o.colored = not args.no_color
+
     if args.credentials is not None:
         credentials = args.credentials.split(":", 1)
         hub = github.Github(credentials[0], credentials[1])
@@ -56,9 +60,8 @@ def _main():
             e.args += ("API rate limit exceeded? Use the %s option." % (credentials_option),)
         raise
 
-    global _printed_output
-    if args.mailto is not None and _printed_output != "":
-        _send_by_email(_printed_output, args)
+    if args.mailto is not None and output.o.echoed != "":
+        _send_by_email(output.o.echoed, args)
 
 def _add_argument_watcher_name(parser):
     """Adds an argument corresponding to a watcher's user name to an argparse parser.
@@ -82,15 +85,15 @@ def _watchlist(hub, args):
     Prints all watched repos of 'args.username'.
     """
     for repo in _get_watchlist(hub, args.username):
-        _print(repo if args.no_color else _red(repo))
+        output.o.echo(output.o.red(repo))
 
 def _lastrepocommits(hub, args):
     """Implements 'lastrepocommits' command.
     Prints all commits on 'args.repo' with committer timestamp bigger than
     'args.YYYY,MM,DD,hh,mm,ss'.
     """
-    for commit in _get_last_commits(hub, args.repo, _args_to_datetime(args), args.no_color):
-        _print(commit)
+    for commit in _get_last_commits(hub, args.repo, _args_to_datetime(args)):
+        output.o.echo(commit)
 
 def _lastwatchedcommits(hub, args):
     """Implements 'lastwatchedcommits' command.
@@ -98,8 +101,8 @@ def _lastwatchedcommits(hub, args):
     'args.YYYY,MM,DD,hh,mm,ss'.
     """
     for repo in _get_watchlist(hub, args.username):
-        for commit in _get_last_commits(hub, repo, _args_to_datetime(args), args.no_color):
-            _print("%s - %s" % (repo if args.no_color else _red(repo), commit))
+        for commit in _get_last_commits(hub, repo, _args_to_datetime(args)):
+            output.o.echo("%s - %s" % (output.o.red(repo), commit))
 
 def _get_watchlist(hub, username):
     """Returns list of all watched repos of 'username'.
@@ -113,9 +116,8 @@ def _get_watchlist(hub, username):
 
     return [repo.full_name for repo in user.get_subscriptions()]
 
-def _get_last_commits(hub, repo_full_name, since, no_color):
+def _get_last_commits(hub, repo_full_name, since):
     """Returns list of all commits on 'repo_full_name' with committer timestamp bigger than 'since'.
-    Set 'no_color' to true to disable text coloring.
     """
     try:
         repo = hub.get_repo(repo_full_name)
@@ -127,9 +129,8 @@ def _get_last_commits(hub, repo_full_name, since, no_color):
     result = []
     for i in repo.get_commits(since=since):
         commit = repo.get_git_commit(i.sha)
-        date = commit.committer.date if no_color else _green(commit.committer.date)
-        name = commit.committer.name if no_color else _blue(commit.committer.name)
-        result.append("%s - %s - %s" % (date, name, commit.message))
+        result.append("%s - %s - %s" % (output.o.green(commit.committer.date),
+                                        output.o.blue(commit.committer.name), commit.message))
     return result
 
 def _args_to_datetime(args):
@@ -142,26 +143,6 @@ def _args_to_datetime(args):
         e.args += ("Timestamp malformed?",)
         raise
 
-def _red(text):
-    return _colored(text, 31)
-
-def _green(text):
-    return _colored(text, 32)
-
-def _blue(text):
-    return _colored(text, 34)
-
-def _colored(text, color):
-    """Returns 'text' with a color, i.e. bash and zsh would print the returned string in the given
-       color.
-    """
-    return "\033[" + str(color) + "m" + str(text) + "\033[0m"
-
-def _print(text):
-    print(text)
-    global _printed_output
-    _printed_output += text + "\n"
-
 def _send_by_email(text, args):
     """Sends 'text' by e-mail.
     """
@@ -173,12 +154,9 @@ def _send_by_email(text, args):
     smtp = smtplib.SMTP("localhost")
     smtp.sendmail(sender, args.mailto, email.as_string())
     smtp.quit()
-    _print("Sent by e-mail to %s" % (args.mailto))
+    output.o.echo("Sent by e-mail to %s" % (args.mailto))
 
 if __name__ == "__main__":
-    # Contains at any time the whole text that has been printed to the console:
-    _printed_output = ""
-
     try:
         _main()
     except Exception as e:
