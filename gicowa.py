@@ -122,13 +122,18 @@ def _get_last_commits(hub, repo_full_name, since):
 def _args_to_datetime(args):
     """Returns a datetime built from 'args.YYYY,MM,DD,hh,mm,ss'.
     """
-    return datetime.datetime(int(args.YYYY), int(args.MM), int(args.DD), int(args.hh),
-                             int(args.mm), int(args.ss))
+    try:
+        return datetime.datetime(int(args.YYYY), int(args.MM), int(args.DD), int(args.hh),
+                                 int(args.mm), int(args.ss))
+    except ValueError as e:
+        e.args += ("Timestamp malformed?",)
+        raise
 
 if __name__ == "__main__":
     try:
         _main()
     except Exception as e:
-        print "Oops, an error occured. " + " ".join(e.args)
+        print "Oops, an error occured."
+        print "\n".join(e.args)
         print
         raise
