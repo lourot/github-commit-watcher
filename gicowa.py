@@ -52,7 +52,11 @@ def _main():
 
     if args.credentials is not None:
         credentials = args.credentials.split(":", 1)
-        hub = github.Github(credentials[0], credentials[1])
+        try:
+            hub = github.Github(credentials[0], credentials[1])
+        except IndexError as e:
+            e.args += ("Bad credentials' syntax.",)
+            raise
     else:
         hub = github.Github()
 
