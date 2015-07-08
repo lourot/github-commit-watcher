@@ -52,22 +52,29 @@ AurelienLourot/github-commit-watcher
 ```
 $ gicowa lastrepocommits AurelienLourot/github-commit-watcher since 2015 07 05 09 12 00
 lastrepocommits AurelienLourot/github-commit-watcher since 2015-07-05 09:12:00
-2015-07-05 10:46:27 - Aurelien Lourot - Minor cleanup.
-2015-07-05 09:39:01 - Aurelien Lourot - watchlist command implemented.
-2015-07-05 09:12:00 - Aurelien Lourot - argparse added.
+Last commit pushed on 2015-07-05 10:48:58
+Committed on 2015-07-05 10:46:27 - Aurelien Lourot - Minor cleanup.
+Committed on 2015-07-05 09:39:01 - Aurelien Lourot - watchlist command implemented.
+Committed on 2015-07-05 09:12:00 - Aurelien Lourot - argparse added.
 ```
+
+> **NOTE:** keep in mind that a commit's *committer timestamp* isn't the time at which it gets
+> pushed.
 
 ### List last commits on repos watched by a user
 
 ```
 $ gicowa lastwatchedcommits AurelienLourot since 2015 07 04 00 00 00
 lastwatchedcommits AurelienLourot since 2015-07-04 00:00:00
-AurelienLourot/crouton-emacs-conf - 2015-07-04 17:08:48 - Aurelien Lourot - Support for Del key.
-brillout/FasterWeb - 2015-07-04 16:38:55 - brillout - add README
-AurelienLourot/github-commit-watcher - 2015-07-05 10:46:27 - Aurelien Lourot - Minor cleanup.
-AurelienLourot/github-commit-watcher - 2015-07-05 09:39:01 - Aurelien Lourot - watchlist command implemented.
-AurelienLourot/github-commit-watcher - 2015-07-05 09:12:00 - Aurelien Lourot - argparse added.
-AurelienLourot/github-commit-watcher - 2015-07-05 09:07:14 - AurelienLourot - Initial commit
+AurelienLourot/crouton-emacs-conf - Last commit pushed on 2015-07-04 17:10:18
+AurelienLourot/crouton-emacs-conf - Committed on 2015-07-04 17:08:48 - Aurelien Lourot - Support for Del key.
+brillout/FasterWeb - Last commit pushed on 2015-07-04 16:40:54
+brillout/FasterWeb - Committed on 2015-07-04 16:38:55 - brillout - add README
+AurelienLourot/github-commit-watcher - Last commit pushed on 2015-07-05 10:48:58
+AurelienLourot/github-commit-watcher - Committed on 2015-07-05 10:46:27 - Aurelien Lourot - Minor cleanup.
+AurelienLourot/github-commit-watcher - Committed on 2015-07-05 09:39:01 - Aurelien Lourot - watchlist command implemented.
+AurelienLourot/github-commit-watcher - Committed on 2015-07-05 09:12:00 - Aurelien Lourot - argparse added.
+AurelienLourot/github-commit-watcher - Committed on 2015-07-05 09:07:14 - AurelienLourot - Initial commit
 ```
 
 ### List last commits since last run
@@ -91,12 +98,15 @@ You can send the output of any command to yourself by e-mail:
 ```
 $ gicowa --no-color --mailto myself@mydomain.com lastwatchedcommits AurelienLourot since 2015 07 04 00 00 00
 lastwatchedcommits AurelienLourot since 2015-07-04 00:00:00
-AurelienLourot/crouton-emacs-conf - 2015-07-04 17:08:48 - Aurelien Lourot - Support for Del key.
-brillout/FasterWeb - 2015-07-04 16:38:55 - brillout - add README
-AurelienLourot/github-commit-watcher - 2015-07-05 10:46:27 - Aurelien Lourot - Minor cleanup.
-AurelienLourot/github-commit-watcher - 2015-07-05 09:39:01 - Aurelien Lourot - watchlist command implemented.
-AurelienLourot/github-commit-watcher - 2015-07-05 09:12:00 - Aurelien Lourot - argparse added.
-AurelienLourot/github-commit-watcher - 2015-07-05 09:07:14 - AurelienLourot - Initial commit
+AurelienLourot/crouton-emacs-conf - Last commit pushed on 2015-07-04 17:10:18
+AurelienLourot/crouton-emacs-conf - Committed on 2015-07-04 17:08:48 - Aurelien Lourot - Support for Del key.
+brillout/FasterWeb - Last commit pushed on 2015-07-04 16:40:54
+brillout/FasterWeb - Committed on 2015-07-04 16:38:55 - brillout - add README
+AurelienLourot/github-commit-watcher - Last commit pushed on 2015-07-05 10:48:58
+AurelienLourot/github-commit-watcher - Committed on 2015-07-05 10:46:27 - Aurelien Lourot - Minor cleanup.
+AurelienLourot/github-commit-watcher - Committed on 2015-07-05 09:39:01 - Aurelien Lourot - watchlist command implemented.
+AurelienLourot/github-commit-watcher - Committed on 2015-07-05 09:12:00 - Aurelien Lourot - argparse added.
+AurelienLourot/github-commit-watcher - Committed on 2015-07-05 09:07:14 - AurelienLourot - Initial commit
 Sent by e-mail to myself@mydomain.com
 ```
 

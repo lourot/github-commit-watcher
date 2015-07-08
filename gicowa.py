@@ -141,6 +141,9 @@ def _lastrepocommits(hub, args):
             since = now
     o.get().echo(command + " since " + str(since))
 
+    pushed = _has_been_pushed(hub, args.repo, since.to_datetime())
+    if pushed is not None:
+        o.get().echo(pushed)
     for commit in _get_last_commits(hub, args.repo, since.to_datetime()):
         o.get().echo(commit)
 
@@ -165,6 +168,9 @@ def _lastwatchedcommits(hub, args):
     o.get().echo(command + " since " + str(since))
 
     for repo in _get_watchlist(hub, args.username):
+        pushed = _has_been_pushed(hub, repo, since.to_datetime())
+        if pushed is not None:
+            o.get().echo("%s - %s" % (o.get().red(repo), pushed))
         for commit in _get_last_commits(hub, repo, since.to_datetime()):
             o.get().echo("%s - %s" % (o.get().red(repo), commit))
 
@@ -186,6 +192,7 @@ def _get_watchlist(hub, username):
 def _get_last_commits(hub, repo_full_name, since):
     """Returns list of all commits on 'repo_full_name' with committer timestamp bigger than 'since'.
     """
+    # FIXME this code is duplicated:
     try:
         repo = hub.get_repo(repo_full_name)
     except github.GithubException as e:
@@ -196,9 +203,25 @@ def _get_last_commits(hub, repo_full_name, since):
     result = []
     for i in repo.get_commits(since=since):
         commit = repo.get_git_commit(i.sha)
-        result.append("%s - %s - %s" % (o.get().green(commit.committer.date),
-                                        o.get().blue(commit.committer.name), commit.message))
+        result.append("Committed on %s - %s - %s"
+                      % (o.get().green(commit.committer.date),
+                         o.get().blue(commit.committer.name), commit.message))
     return result
+
+def _has_been_pushed(hub, repo_full_name, since):
+    """Returns string describing last push timestamp of 'repo_full_name''s last commit if after
+    'since'. Returns None otherwise.
+    """
+    # FIXME this code is duplicated:
+    try:
+        repo = hub.get_repo(repo_full_name)
+    except github.GithubException as e:
+        if e.status == 404:
+            e.args += ("%s repo doesn't exist?" % (repo_full_name),)
+        raise
+
+    if repo.pushed_at >= since:
+        return "Last commit pushed on " + o.get().green(repo.pushed_at)
 
 if __name__ == "__main__":
     try:
