@@ -65,9 +65,12 @@ def _main():
             e.args += ("API rate limit exceeded? Use the %s option." % (credentials_option),)
         raise
 
-    if args.mailto is not None and o.get().echoed.count("\n") > 1:
-        mail.send_result(args.command, o.get().echoed, args.mailto)
-        o.get().echo("Sent by e-mail to %s" % (args.mailto))
+    if args.mailto is not None:
+        if o.get().echoed.count("\n") > 1:
+            mail.send_result(args.command, o.get().echoed, args.mailto)
+            o.get().echo("Sent by e-mail to %s" % (args.mailto))
+        else:
+            o.get().echo("No e-mail sent.")
 
     if args.persist:
         p.get().save()
