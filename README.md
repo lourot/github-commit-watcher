@@ -23,7 +23,7 @@ Add the following line to your `/etc/crontab`:
 a repo you're watching.
 
 > **NOTE:** the e-mails are likely to be considered as spam until you mark one as non-spam in your
-> e-mail client.
+> e-mail client. Or use the `--mailfrom` option.
 
 ## Other/Advanced usage
 
@@ -105,7 +105,7 @@ Sent by e-mail to myself@mydomain.com
 > * You probably want to use `--no-color` because your e-mail client is likely not to render the
 >   bash color escape sequences properly.
 > * The e-mails are likely to be considered as spam until you mark one as non-spam in your e-mail
->   client.
+>   client. Or use the `--mailfrom` option.
 
 ## Initial Author
 

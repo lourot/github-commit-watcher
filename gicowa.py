@@ -3,7 +3,7 @@
 
 import argparse
 import github
-from impl import mail
+from impl.mail import Mail as m
 from impl.output import Output as o
 from impl.persistence import Persistence as p
 from impl.timestamp import Timestamp
@@ -21,6 +21,9 @@ def _main():
 
     parser.add_argument("--mailto",
         help="e-mail address to which the output should be sent (e.g. 'aurelien.lourot@gmail.com')")
+    parser.add_argument("--mailfrom",
+        help="e-mail server and credentials from which the output should be sent (e.g. "
+             + "'smtp.googlemail.com:465:aurelien.lourot@gmail.com:password')")
 
     parser.add_argument(_persist_option, action="store_true",
         help="gicowa will keep track of the last commands run in %s" % (p.filename))
@@ -71,7 +74,17 @@ def _main():
 
     if args.mailto is not None:
         if o.get().echoed.count("\n") > 1:
-            mail.send_result(args.command, o.get().echoed, args.mailto)
+            if args.mailfrom is not None:
+                mailfrom = args.mailfrom.split(":", 3)
+                try:
+                    m.get().server = mailfrom[0]
+                    m.get().port = mailfrom[1]
+                    m.get().sender = mailfrom[2]
+                    m.get().password = mailfrom[3]
+                except IndexError as e:
+                    e.args += ("Bad mailfrom syntax.",)
+                    raise
+            m.get().send_result(args.command, o.get().echoed, args.mailto)
             o.get().echo("Sent by e-mail to %s" % (args.mailto))
         else:
             o.get().echo("No e-mail sent.")
