@@ -1,0 +1,129 @@
+<h1>gicowa.py - GitHub Commit Watcher</h1>
+
+<p>GitHub's <i>Watch</i> feature doesn't send notifications when commits are pushed. This script
+aims to implement this feature and much more.</p>
+
+<h2>Installation</h2>
+
+<pre>
+# sudo apt-get install sendmail
+# sudo pip install PyGithub
+$ git clone https://github.com/AurelienLourot/github-commit-watcher.git
+</pre>
+
+<h2>Quick setup</h2>
+
+<p>Add the following line to your <code>/etc/crontab</code>:</p>
+
+<pre>
+0 * * * * root /path/to/github-commit-watcher/gicowa.py --persist --no-color --mailto myself@mydomain.com lastwatchedcommits MyGitHubUsername sincelast > /tmp/gicowa 2>&1
+</pre>
+
+<p><b>That's it.</b> As long as your machine is running you'll get e-mails when something gets
+pushed on a repo you're watching.</p>
+
+<blockquote>
+<b>NOTE:</b> the e-mails are likely to be considered as spam until you mark one as non-spam in your
+e-mail client. Or use the <code>--mailfrom</code> option.
+</blockquote>
+
+<h2>Other/Advanced usage</h2>
+
+<p><code>gicowa</code> is a generic command-line tool with which you can make much more that just
+implementing the use case depicted in the introduction. This section shows what it can.</p>
+
+<p>First of all, add the following line to your <code>.bashrc</code>:</p>
+
+<pre>
+alias gicowa='/path/to/github-commit-watcher/gicowa.py'
+</pre>
+
+<h3>List repos watched by a user</h3>
+
+<pre>
+$ gicowa watchlist AurelienLourot
+watchlist AurelienLourot
+AurelienLourot/uncommitted
+AurelienLourot/crouton-emacs-conf
+brillout/FasterWeb
+AurelienLourot/github-commit-watcher
+</pre>
+
+<h3>List last commits on a repo</h3>
+
+<pre>
+$ gicowa lastrepocommits AurelienLourot/github-commit-watcher since 2015 07 05 09 12 00
+lastrepocommits AurelienLourot/github-commit-watcher since 2015-07-05 09:12:00
+Last commit pushed on 2015-07-05 10:48:58
+Committed on 2015-07-05 10:46:27 - Aurelien Lourot - Minor cleanup.
+Committed on 2015-07-05 09:39:01 - Aurelien Lourot - watchlist command implemented.
+Committed on 2015-07-05 09:12:00 - Aurelien Lourot - argparse added.
+</pre>
+
+<blockquote>
+<b>NOTE:</b> keep in mind that a commit's <i>committer timestamp</i> isn't the time at which it gets
+pushed.
+</blockquote>
+
+<h3>List last commits on repos watched by a user</h3>
+
+<pre>
+$ gicowa lastwatchedcommits AurelienLourot since 2015 07 04 00 00 00
+lastwatchedcommits AurelienLourot since 2015-07-04 00:00:00
+AurelienLourot/crouton-emacs-conf - Last commit pushed on 2015-07-04 17:10:18
+AurelienLourot/crouton-emacs-conf - Committed on 2015-07-04 17:08:48 - Aurelien Lourot - Support for Del key.
+brillout/FasterWeb - Last commit pushed on 2015-07-04 16:40:54
+brillout/FasterWeb - Committed on 2015-07-04 16:38:55 - brillout - add README
+AurelienLourot/github-commit-watcher - Last commit pushed on 2015-07-05 10:48:58
+AurelienLourot/github-commit-watcher - Committed on 2015-07-05 10:46:27 - Aurelien Lourot - Minor cleanup.
+AurelienLourot/github-commit-watcher - Committed on 2015-07-05 09:39:01 - Aurelien Lourot - watchlist command implemented.
+AurelienLourot/github-commit-watcher - Committed on 2015-07-05 09:12:00 - Aurelien Lourot - argparse added.
+AurelienLourot/github-commit-watcher - Committed on 2015-07-05 09:07:14 - AurelienLourot - Initial commit
+</pre>
+
+<h3>List last commits since last run</h3>
+
+<p>Any listing command taking a <code>since &lt;timestamp&gt;</code> argument takes also a
+<code>sincelast</code> one. It will then use the time where that same command has been run for the
+last time on that machine with the option <code>--persist</code>. This option makes
+<code>gicowa</code> remember the last execution time of each command in <code>~/.gicowa</code>.</p>
+
+<pre>
+$ gicowa --persist lastwatchedcommits AurelienLourot sincelast
+lastwatchedcommits AurelienLourot since 2015-07-05 20:17:46
+$ gicowa --persist lastwatchedcommits AurelienLourot sincelast
+lastwatchedcommits AurelienLourot since 2015-07-05 20:25:33
+</pre>
+
+<h3>Send output by e-mail</h3>
+
+<p>You can send the output of any command to yourself by e-mail:</p>
+
+<pre>
+$ gicowa --no-color --mailto myself@mydomain.com lastwatchedcommits AurelienLourot since 2015 07 04 00 00 00
+lastwatchedcommits AurelienLourot since 2015-07-04 00:00:00
+AurelienLourot/crouton-emacs-conf - Last commit pushed on 2015-07-04 17:10:18
+AurelienLourot/crouton-emacs-conf - Committed on 2015-07-04 17:08:48 - Aurelien Lourot - Support for Del key.
+brillout/FasterWeb - Last commit pushed on 2015-07-04 16:40:54
+brillout/FasterWeb - Committed on 2015-07-04 16:38:55 - brillout - add README
+AurelienLourot/github-commit-watcher - Last commit pushed on 2015-07-05 10:48:58
+AurelienLourot/github-commit-watcher - Committed on 2015-07-05 10:46:27 - Aurelien Lourot - Minor cleanup.
+AurelienLourot/github-commit-watcher - Committed on 2015-07-05 09:39:01 - Aurelien Lourot - watchlist command implemented.
+AurelienLourot/github-commit-watcher - Committed on 2015-07-05 09:12:00 - Aurelien Lourot - argparse added.
+AurelienLourot/github-commit-watcher - Committed on 2015-07-05 09:07:14 - AurelienLourot - Initial commit
+Sent by e-mail to myself@mydomain.com
+</pre>
+
+<blockquote>
+<b>NOTES:</b>
+<ul>
+<li>You probably want to use <code>--no-color</code> because your e-mail client is likely not to
+render the bash color escape sequences properly.</li>
+<li>The e-mails are likely to be considered as spam until you mark one as non-spam in your e-mail
+client. Or use the <code>--mailfrom</code> option.</li>
+</ul>
+</blockquote>
+
+<h2>Initial Author</h2>
+
+<p><a href="http://lourot.com/">Aurelien Lourot</a></p>
