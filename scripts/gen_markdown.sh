@@ -10,4 +10,4 @@ echo "Official documentation [here](http://lourot.com/gicowa)." >> README.md
 echo ""                                                         >> README.md
 
 # sudo pip install html2text
-html2text README.html                   >> README.md
+html2text README.html                                           >> README.md
