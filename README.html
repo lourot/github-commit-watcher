@@ -6,9 +6,9 @@ aims to implement this feature and much more.</p>
 <h2>Installation</h2>
 
 <pre>
-# sudo apt-get install sendmail
+<span class="black"># sudo apt-get install sendmail
 # sudo pip install PyGithub
-$ git clone https://github.com/AurelienLourot/github-commit-watcher.git
+$ git clone https://github.com/AurelienLourot/github-commit-watcher.git</span>
 </pre>
 
 <h2>Quick setup</h2>
@@ -16,7 +16,7 @@ $ git clone https://github.com/AurelienLourot/github-commit-watcher.git
 <p>Add the following line to your <code>/etc/crontab</code>:</p>
 
 <pre>
-0 * * * * root /path/to/github-commit-watcher/gicowa.py --persist --no-color --mailto myself@mydomain.com lastwatchedcommits MyGitHubUsername sincelast > /tmp/gicowa 2>&1
+<span class="black">0 * * * * root /path/to/github-commit-watcher/gicowa.py --persist --no-color --mailto myself@mydomain.com lastwatchedcommits MyGitHubUsername sincelast > /tmp/gicowa 2>&1</span>
 </pre>
 
 <p><b>That's it.</b> As long as your machine is running you'll get e-mails when something gets
@@ -35,13 +35,13 @@ implementing the use case depicted in the introduction. This section shows what 
 <p>First of all, add the following line to your <code>.bashrc</code>:</p>
 
 <pre>
-alias gicowa='/path/to/github-commit-watcher/gicowa.py'
+<span class="black">alias gicowa='/path/to/github-commit-watcher/gicowa.py'</span>
 </pre>
 
 <h3>List repos watched by a user</h3>
 
 <pre>
-$ gicowa watchlist AurelienLourot
+<span class="black">$ gicowa watchlist AurelienLourot</span>
 watchlist AurelienLourot
 <span class="red">AurelienLourot/uncommitted
 AurelienLourot/crouton-emacs-conf
@@ -52,7 +52,7 @@ AurelienLourot/github-commit-watcher</span>
 <h3>List last commits on a repo</h3>
 
 <pre>
-$ gicowa lastrepocommits AurelienLourot/github-commit-watcher since 2015 07 05 09 12 00
+<span class="black">$ gicowa lastrepocommits AurelienLourot/github-commit-watcher since 2015 07 05 09 12 00</span>
 lastrepocommits AurelienLourot/github-commit-watcher since 2015-07-05 09:12:00
 Last commit pushed on <span class="green">2015-07-05 10:48:58</span>
 Committed on <span class="green">2015-07-05 10:46:27</span> - <span class="blue">Aurelien Lourot</span> - Minor cleanup.
@@ -68,7 +68,7 @@ pushed.
 <h3>List last commits on repos watched by a user</h3>
 
 <pre>
-$ gicowa lastwatchedcommits AurelienLourot since 2015 07 04 00 00 00
+<span class="black">$ gicowa lastwatchedcommits AurelienLourot since 2015 07 04 00 00 00</span>
 lastwatchedcommits AurelienLourot since 2015-07-04 00:00:00
 <span class="red">AurelienLourot/crouton-emacs-conf</span> - Last commit pushed on <span class="green">2015-07-04 17:10:18</span>
 <span class="red">AurelienLourot/crouton-emacs-conf</span> - Committed on <span class="green">2015-07-04 17:08:48</span> - <span class="blue">Aurelien Lourot</span> - Support for Del key.
@@ -89,9 +89,9 @@ last time on that machine with the option <code>--persist</code>. This option ma
 <code>gicowa</code> remember the last execution time of each command in <code>~/.gicowa</code>.</p>
 
 <pre>
-$ gicowa --persist lastwatchedcommits AurelienLourot sincelast
+<span class="black">$ gicowa --persist lastwatchedcommits AurelienLourot sincelast</span>
 lastwatchedcommits AurelienLourot since 2015-07-05 20:17:46
-$ gicowa --persist lastwatchedcommits AurelienLourot sincelast
+<span class="black">$ gicowa --persist lastwatchedcommits AurelienLourot sincelast</span>
 lastwatchedcommits AurelienLourot since 2015-07-05 20:25:33
 </pre>
 
@@ -100,7 +100,7 @@ lastwatchedcommits AurelienLourot since 2015-07-05 20:25:33
 <p>You can send the output of any command to yourself by e-mail:</p>
 
 <pre>
-$ gicowa --no-color --mailto myself@mydomain.com lastwatchedcommits AurelienLourot since 2015 07 04 00 00 00
+<span class="black">$ gicowa --no-color --mailto myself@mydomain.com lastwatchedcommits AurelienLourot since 2015 07 04 00 00 00</span>
 lastwatchedcommits AurelienLourot since 2015-07-04 00:00:00
 AurelienLourot/crouton-emacs-conf - Last commit pushed on 2015-07-04 17:10:18
 AurelienLourot/crouton-emacs-conf - Committed on 2015-07-04 17:08:48 - Aurelien Lourot - Support for Del key.
