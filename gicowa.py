@@ -3,6 +3,7 @@
 
 import argparse
 import github
+import traceback
 from impl.mail import Mail as m
 from impl.output import Output as o
 from impl.persistence import Persistence as p
@@ -51,6 +52,18 @@ def _main():
 
     args = parser.parse_args()
 
+    if args.mailfrom is not None:
+        mailfrom = args.mailfrom.split(":", 3)
+        try:
+            m.get().server = mailfrom[0]
+            m.get().port = mailfrom[1]
+            m.get().sender = mailfrom[2]
+            m.get().password = mailfrom[3]
+        except IndexError as e:
+            e.args += ("Bad mailfrom syntax.",)
+            raise
+    m.get().dest = args.mailto
+
     o.get().colored = not args.no_color
 
     if args.credentials is not None:
@@ -72,20 +85,10 @@ def _main():
             e.args += ("API rate limit exceeded? Use the %s option." % (credentials_option),)
         raise
 
-    if args.mailto is not None:
+    if m.get().dest is not None:
         if o.get().echoed.count("\n") > 1:
-            if args.mailfrom is not None:
-                mailfrom = args.mailfrom.split(":", 3)
-                try:
-                    m.get().server = mailfrom[0]
-                    m.get().port = mailfrom[1]
-                    m.get().sender = mailfrom[2]
-                    m.get().password = mailfrom[3]
-                except IndexError as e:
-                    e.args += ("Bad mailfrom syntax.",)
-                    raise
-            m.get().send_result(args.command, o.get().echoed, args.mailto)
-            o.get().echo("Sent by e-mail to %s" % (args.mailto))
+            m.get().send_result(args.command, o.get().echoed)
+            o.get().echo("Sent by e-mail to %s" % (m.get().dest))
         else:
             o.get().echo("No e-mail sent.")
 
@@ -227,7 +230,13 @@ if __name__ == "__main__":
     try:
         _main()
     except Exception as e:
-        print("Oops, an error occured.")
-        print("\n".join(str(i) for i in e.args))
-        print("")
+        error_msg = "Oops, an error occured.\n" + "\n".join(str(i) for i in e.args) + "\n\n"
+        error_msg += traceback.format_exc()
+        try:
+            o.get().echo(error_msg)
+            if m.get().dest is not None:
+                m.get().send_result("error", o.get().echoed)
+                o.get().echo("Sent by e-mail to %s" % (m.get().dest))
+        except:
+            print(error_msg)
         raise

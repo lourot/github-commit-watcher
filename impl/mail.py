@@ -22,23 +22,24 @@ class Mail:
         self.server = "localhost"
         self.port = None
         self.sender = "gicowa@lourot.com"
+        self.dest = None
         self.password = None
 
-    def send_result(self, command, output, dest):
+    def send_result(self, command, output):
         """Sends command output by e-mail.
         """
         email = MIMEText(output)
         email["Subject"] = "[gicowa] %s." % (command)
         email["From"] = self.sender
-        email["To"] = dest
+        email["To"] = self.dest
         if self.port is None or self.password is None:
             smtp = smtplib.SMTP(self.server)
         else:
             smtp = smtplib.SMTP_SSL(self.server, self.port)
             smtp.login(self.sender, self.password)
         try:
-            smtp.sendmail(self.sender, dest, email.as_string())
+            smtp.sendmail(self.sender, self.dest, email.as_string())
         except smtplib.SMTPRecipientsRefused as e:
-            e.args += ("%s address malformed?" % (dest),)
+            e.args += ("%s address malformed?" % (self.dest),)
             raise
         smtp.quit()
