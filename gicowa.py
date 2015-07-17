@@ -3,6 +3,7 @@
 
 import argparse
 import github
+import socket
 import traceback
 from impl.mail import Mail as m
 from impl.output import Output as o
@@ -83,6 +84,9 @@ def _main():
             e.args += ("Bad credentials?",)
         if e.status == 403 and args.credentials is None:
             e.args += ("API rate limit exceeded? Use the %s option." % (credentials_option),)
+        raise
+    except socket.gaierror as e:
+        e.args += ("No internet connection?",)
         raise
 
     if m.get().dest is not None:
