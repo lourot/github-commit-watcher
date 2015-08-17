@@ -16,7 +16,7 @@ This script aims to implement this feature and much more.
     
     
     $ sudo apt-get install sendmail
-    $ sudo pip install PyGithub
+    $ sudo pip install -r requirements.txt
     $ git clone https://github.com/AurelienLourot/github-commit-watcher.git
     $ cd github-commit-watcher/
     $ python setup.py sdist
