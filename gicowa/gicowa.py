@@ -230,7 +230,7 @@ def _has_been_pushed(hub, repo_full_name, since):
     if repo.pushed_at >= since:
         return "Last commit pushed on " + o.get().green(repo.pushed_at)
 
-if __name__ == "__main__":
+def main():
     try:
         _main()
     except Exception as e:

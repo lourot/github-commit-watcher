@@ -6,9 +6,12 @@ aims to implement this feature and much more.</p>
 <h2>Installation</h2>
 
 <pre>
-<span class="black"># sudo apt-get install sendmail
-# sudo pip install PyGithub
-$ git clone https://github.com/AurelienLourot/github-commit-watcher.git</span>
+<span class="black">$ sudo apt-get install sendmail
+$ sudo pip install PyGithub
+$ git clone https://github.com/AurelienLourot/github-commit-watcher.git
+$ cd github-commit-watcher/
+$ python setup.py sdist
+$ sudo pip install dist/gicowa-*.tar.gz</span>
 </pre>
 
 <h2>Quick setup</h2>
@@ -16,7 +19,7 @@ $ git clone https://github.com/AurelienLourot/github-commit-watcher.git</span>
 <p>Add the following line to your <code>/etc/crontab</code>:</p>
 
 <pre>
-<span class="black">0 * * * * root /path/to/github-commit-watcher/gicowa.py --persist --no-color --mailto myself@mydomain.com lastwatchedcommits MyGitHubUsername sincelast > /tmp/gicowa 2>&1</span>
+<span class="black">0 * * * * root gicowa --persist --no-color --mailto myself@mydomain.com lastwatchedcommits MyGitHubUsername sincelast > /tmp/gicowa 2>&1</span>
 </pre>
 
 <p><b>That's it.</b> As long as your machine is running you'll get e-mails when something gets
@@ -31,12 +34,6 @@ e-mail client. Or use the <code>--mailfrom</code> option.
 
 <p><code>gicowa</code> is a generic command-line tool with which you can make much more that just
 implementing the use case depicted in the introduction. This section shows what it can.</p>
-
-<p>First of all, add the following line to your <code>.bashrc</code>:</p>
-
-<pre>
-<span class="black">alias gicowa='/path/to/github-commit-watcher/gicowa.py'</span>
-</pre>
 
 <h3>List repos watched by a user</h3>
 
