@@ -3,6 +3,7 @@ import gicowa
 
 setup(name="gicowa",
       version=gicowa.__version__,
+      install_requires=["PyGithub"],
       description="GitHub Commit Watcher",
       long_description=open("README").read(),
       author="Aurelien Lourot",
