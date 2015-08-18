@@ -1,1 +1,2 @@
-PyGithub
+PyGithub==1.25.2
+html2text==2015.6.21
