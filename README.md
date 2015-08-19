@@ -147,6 +147,10 @@ non-spam in your e-mail client. Or use the `--mailfrom` option.
 
 ## Changelog
 
+**1.2.1** (2015-08-20):
+
+  * Documentation improved.
+
 **1.2.0** (2015-08-20):
 
   * `--version` option implemented.
