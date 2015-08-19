@@ -147,7 +147,11 @@ non-spam in your e-mail client. Or use the `--mailfrom` option.
 
 ## Changelog
 
-**1.0.1** (2015-08-18) to **1.0.9** (2015-08-19)
+**1.1.0** (2015-08-20):
+
+  * `--errorto` option implemented.
+
+**1.0.1** (2015-08-18) to **1.0.9** (2015-08-19):
 
   * Documentation improved.
 

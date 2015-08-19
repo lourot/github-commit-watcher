@@ -22,7 +22,7 @@ class Mail:
         self.server = "localhost"
         self.port = None
         self.sender = "gicowa@lourot.com"
-        self.dest = None
+        self.dest = set()
         self.password = None
 
     def send_result(self, command, output):
@@ -31,7 +31,7 @@ class Mail:
         email = MIMEText(output)
         email["Subject"] = "[gicowa] %s." % (command)
         email["From"] = self.sender
-        email["To"] = self.dest
+        email["To"] = ", ".join(self.dest)
         if self.port is None or self.password is None:
             smtp = smtplib.SMTP(self.server)
         else:
@@ -40,6 +40,6 @@ class Mail:
         try:
             smtp.sendmail(self.sender, self.dest, email.as_string())
         except smtplib.SMTPRecipientsRefused as e:
-            e.args += ("%s address malformed?" % (self.dest),)
+            e.args += ("%s addresses malformed?" % ", ".join(self.dest),)
             raise
         smtp.quit()

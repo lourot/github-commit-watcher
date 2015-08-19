@@ -11,6 +11,7 @@ from impl.persistence import Persistence as p
 from impl.timestamp import Timestamp
 
 _persist_option = "--persist"
+_errorto = None
 
 def _main():
     parser = argparse.ArgumentParser(description="watch GitHub commits easily")
@@ -22,10 +23,14 @@ def _main():
                         help="your GitHub login and password (e.g. 'AurelienLourot:password')")
 
     parser.add_argument("--mailto",
-        help="e-mail address to which the output should be sent (e.g. 'aurelien.lourot@gmail.com')")
+        help="e-mail address to which the output should be sent in any case (e.g. "
+             + "'aurelien.lourot@gmail.com')")
     parser.add_argument("--mailfrom",
         help="e-mail server and credentials from which the output should be sent (e.g. "
              + "'smtp.googlemail.com:465:aurelien.lourot@gmail.com:password')")
+    parser.add_argument("--errorto",
+        help="e-mail address to which the output should be sent in case of an error (e.g. "
+             + "'aurelien.lourot@gmail.com')")
 
     parser.add_argument(_persist_option, action="store_true",
         help="gicowa will keep track of the last commands run in %s" % (p.filename))
@@ -63,7 +68,10 @@ def _main():
         except IndexError as e:
             e.args += ("Bad mailfrom syntax.",)
             raise
-    m.get().dest = args.mailto
+    if args.mailto is not None:
+        m.get().dest.add(args.mailto)
+    global _errorto
+    _errorto = args.errorto
 
     o.get().colored = not args.no_color
 
@@ -89,10 +97,11 @@ def _main():
         e.args += ("No internet connection?",)
         raise
 
-    if m.get().dest is not None:
+    if len(m.get().dest):
         if o.get().echoed.count("\n") > 1:
+            # FIXME this code is duplicated:
             m.get().send_result(args.command, o.get().echoed)
-            o.get().echo("Sent by e-mail to %s" % (m.get().dest))
+            o.get().echo("Sent by e-mail to %s" % ", ".join(m.get().dest))
         else:
             o.get().echo("No e-mail sent.")
 
@@ -238,9 +247,12 @@ def main():
         error_msg += traceback.format_exc()
         try:
             o.get().echo(error_msg)
-            if m.get().dest is not None:
+            if _errorto is not None:
+                m.get().dest.add(_errorto)
+            if len(m.get().dest):
+                # FIXME this code is duplicated:
                 m.get().send_result("error", o.get().echoed)
-                o.get().echo("Sent by e-mail to %s" % (m.get().dest))
+                o.get().echo("Sent by e-mail to %s" % ", ".join(m.get().dest))
         except:
             print(error_msg)
         raise
