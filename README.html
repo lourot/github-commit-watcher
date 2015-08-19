@@ -22,8 +22,13 @@ $ sudo pip install gicowa</span>
 pushed on a repo you're watching.</p>
 
 <blockquote>
-<b>NOTE:</b> the e-mails are likely to be considered as spam until you mark one as non-spam in your
-e-mail client. Or use the <code>--mailfrom</code> option.
+<b>NOTES:</b>
+<ul>
+<li>The e-mails are likely to be considered as spam until you mark one as non-spam in your e-mail
+client. Or use the <code>--mailfrom</code> option.</li>
+<li>If you're watching 15 repos or more, you probably want to use the <code>--credentials</code>
+option to make sure you don't hit the GitHub API rate limit.</li>
+</ul>
 </blockquote>
 
 <h2>Other/Advanced usage</h2>
@@ -74,6 +79,11 @@ lastwatchedcommits AurelienLourot since 2015-07-04 00:00:00
 <span class="red">AurelienLourot/github-commit-watcher</span> - Committed on <span class="green">2015-07-05 09:07:14</span> - <span class="blue">AurelienLourot</span> - Initial commit
 </pre>
 
+<blockquote>
+<b>NOTE:</b> if you're watching 15 repos or more, you probably want to use the
+<code>--credentials</code> option to make sure you don't hit the GitHub API rate limit.
+</blockquote>
+
 <h3>List last commits since last run</h3>
 
 <p>Any listing command taking a <code>since &lt;timestamp&gt;</code> argument takes also a
@@ -116,6 +126,14 @@ render the bash color escape sequences properly.</li>
 client. Or use the <code>--mailfrom</code> option.</li>
 </ul>
 </blockquote>
+
+<h2>Changelog</h2>
+
+<p><b>1.0.1</b> (2015-08-18) to <b>1.0.6</b> (2015-08.19)</p>
+
+<ul>
+<li>Documentation improved.</li>
+</ul>
 
 <h2>Initial Author</h2>
 

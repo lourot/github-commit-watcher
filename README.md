@@ -30,8 +30,15 @@ Add the following line to your `/etc/crontab`:
 
 **That's it.** As long as your machine is running you'll get e-mails when something gets pushed on a repo you're watching.
 
-> **NOTE:** the e-mails are likely to be considered as spam until you mark one
-as non-spam in your e-mail client. Or use the `--mailfrom` option.
+> **NOTES:**
+
+>
+
+>   * The e-mails are likely to be considered as spam until you mark one as
+non-spam in your e-mail client. Or use the `--mailfrom` option.
+
+>   * If you're watching 15 repos or more, you probably want to use the
+`--credentials` option to make sure you don't hit the GitHub API rate limit.
 
 ## Other/Advanced usage
 
@@ -83,6 +90,9 @@ at which it gets pushed.
     AurelienLourot/github-commit-watcher - Committed on 2015-07-05 09:07:14 - AurelienLourot - Initial commit
     
 
+> **NOTE:** if you're watching 15 repos or more, you probably want to use the
+`--credentials` option to make sure you don't hit the GitHub API rate limit.
+
 ### List last commits since last run
 
 Any listing command taking a `since <timestamp>` argument takes also a
@@ -128,6 +138,12 @@ likely not to render the bash color escape sequences properly.
 
 >   * The e-mails are likely to be considered as spam until you mark one as
 non-spam in your e-mail client. Or use the `--mailfrom` option.
+
+## Changelog
+
+**1.0.1** (2015-08-18) to **1.0.6** (2015-08.19)
+
+  * Documentation improved.
 
 ## Initial Author
 
