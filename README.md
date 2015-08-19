@@ -147,7 +147,7 @@ non-spam in your e-mail client. Or use the `--mailfrom` option.
 
 ## Changelog
 
-**1.0.1** (2015-08-18) to **1.0.8** (2015-08-19)
+**1.0.1** (2015-08-18) to **1.0.9** (2015-08-19)
 
   * Documentation improved.
 
