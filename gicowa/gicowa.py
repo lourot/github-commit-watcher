@@ -5,6 +5,7 @@ import argparse
 import github
 import socket
 import traceback
+from __init__ import __version__
 from impl.mail import Mail as m
 from impl.output import Output as o
 from impl.persistence import Persistence as p
@@ -15,6 +16,8 @@ _errorto = None
 
 def _main():
     parser = argparse.ArgumentParser(description="watch GitHub commits easily")
+
+    parser.add_argument("--version", action="version", version="%(prog)s version " + __version__)
 
     parser.add_argument("--no-color", action="store_true", help="disable color in output")
 
