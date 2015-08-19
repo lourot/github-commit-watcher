@@ -70,6 +70,8 @@ shows what it can.
     Committed on 2015-07-05 09:12:00 - Aurelien Lourot - argparse added.
     
 
+* * *
+
 > **NOTE:** keep in mind that a commit's _committer timestamp_ isn't the time
 at which it gets pushed.
 
@@ -89,6 +91,8 @@ at which it gets pushed.
     AurelienLourot/github-commit-watcher - Committed on 2015-07-05 09:12:00 - Aurelien Lourot - argparse added.
     AurelienLourot/github-commit-watcher - Committed on 2015-07-05 09:07:14 - AurelienLourot - Initial commit
     
+
+* * *
 
 > **NOTE:** if you're watching 15 repos or more, you probably want to use the
 `--credentials` option to make sure you don't hit the GitHub API rate limit.
@@ -129,6 +133,8 @@ You can send the output of any command to yourself by e-mail:
     Sent by e-mail to myself@mydomain.com
     
 
+* * *
+
 > **NOTES:**
 
 >
@@ -141,7 +147,7 @@ non-spam in your e-mail client. Or use the `--mailfrom` option.
 
 ## Changelog
 
-**1.0.1** (2015-08-18) to **1.0.6** (2015-08.19)
+**1.0.1** (2015-08-18) to **1.0.7** (2015-08-19)
 
   * Documentation improved.
 
