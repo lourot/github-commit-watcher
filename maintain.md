@@ -96,3 +96,7 @@ Finally check that the package can be installed from PyPI:
 $ sudo pip uninstall gicowa
 $ sudo pip install gicowa
 ```
+
+## Add release notes
+
+to [https://github.com/AurelienLourot/github-commit-watcher/tags](https://github.com/AurelienLourot/github-commit-watcher/tags)
