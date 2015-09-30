@@ -2,7 +2,7 @@
 
 ## Increase the version number
 
-In [gicowa/__init__.py](gicowa/__init__.py) to `7.8.9` in this example.
+In [gicowa/\__init\__.py](gicowa/__init__.py) to `7.8.9` in this example.
 
 ## Extend the changelog
 
@@ -80,8 +80,7 @@ $ python setup.py sdist upload -r pypitest
 > $ python setup.py register -r pypitest
 > ```
 
-Finally check that the package looks well-formed at
-[https://testpypi.python.org/pypi/gicowa/7.8.9](https://testpypi.python.org/pypi/gicowa/7.8.9)
+Finally check that the package looks well-formed at `https://testpypi.python.org/pypi/gicowa/7.8.9`
 
 ## Push the package to PyPI
 
@@ -89,5 +88,10 @@ Finally check that the package looks well-formed at
 $ python setup.py sdist upload
 ```
 
-and check that the package looks well-formed at
-[https://pypi.python.org/pypi/gicowa/7.8.9](https://pypi.python.org/pypi/gicowa/7.8.9)
+and check that the package looks well-formed at `https://pypi.python.org/pypi/gicowa/7.8.9`
+
+Finally check that the package can be installed from PyPI:
+
+```
+$ sudo pip install gicowa
+```
