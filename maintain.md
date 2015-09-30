@@ -85,7 +85,7 @@ Finally check that the package looks well-formed at `https://testpypi.python.org
 ## Push the package to PyPI
 
 ```
-$ python setup.py sdist upload
+$ python setup.py sdist upload -r pypi
 ```
 
 and check that the package looks well-formed at `https://pypi.python.org/pypi/gicowa/7.8.9`
@@ -93,5 +93,6 @@ and check that the package looks well-formed at `https://pypi.python.org/pypi/gi
 Finally check that the package can be installed from PyPI:
 
 ```
+$ sudo pip uninstall gicowa
 $ sudo pip install gicowa
 ```
