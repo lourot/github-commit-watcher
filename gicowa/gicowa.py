@@ -12,8 +12,9 @@ from impl.persistence import Persistence as p
 from impl.timestamp import Timestamp
 
 class Cli:
-    def __init__(self):
+    def __init__(self, githublib):
         self.errorto = None
+        self.__githublib = githublib
         self.__github = None
 
     def run(self):
@@ -85,16 +86,16 @@ class Cli:
         if args.credentials is not None:
             credentials = args.credentials.split(":", 1)
             try:
-                self.__github = github.Github(credentials[0], credentials[1])
+                self.__github = self.__githublib.Github(credentials[0], credentials[1])
             except IndexError as e:
                 e.args += ("Bad credentials' syntax.",)
                 raise
         else:
-            self.__github = github.Github()
+            self.__github = self.__githublib.Github()
 
         try:
             args.impl(args)
-        except github.GithubException as e:
+        except self.__githublib.GithubException as e:
             if e.status == 401 and args.credentials is not None:
                 e.args += ("Bad credentials?",)
             if e.status == 403 and args.credentials is None:
@@ -207,7 +208,7 @@ class Cli:
         """
         try:
             user = self.__github.get_user(username)
-        except github.GithubException as e:
+        except self.__githublib.GithubException as e:
             if e.status == 404:
                 e.args += ("%s user doesn't exist?" % (username),)
             raise
@@ -220,7 +221,7 @@ class Cli:
         # FIXME this code is duplicated:
         try:
             repo = self.__github.get_repo(repo_full_name)
-        except github.GithubException as e:
+        except self.__githublib.GithubException as e:
             if e.status == 404:
                 e.args += ("%s repo doesn't exist?" % (repo_full_name),)
             raise
@@ -240,7 +241,7 @@ class Cli:
         # FIXME this code is duplicated:
         try:
             repo = self.__github.get_repo(repo_full_name)
-        except github.GithubException as e:
+        except self.__githublib.GithubException as e:
             if e.status == 404:
                 e.args += ("%s repo doesn't exist?" % (repo_full_name),)
             raise
@@ -251,7 +252,7 @@ class Cli:
     _persist_option = "--persist"
 
 def main():
-    cli = Cli()
+    cli = Cli(github)
     try:
         cli.run()
     except Exception as e:
