@@ -16,9 +16,9 @@ class Output:
             assert False, "I'm a singleton."
         Output.__instance = self
 
-        # Contains at any time the whole text that has been echoed by this instance:
         self.colored = True
 
+        # Contains at any time the whole text that has been echoed by this instance:
         self.echoed = ""
 
     def echo(self, text):
