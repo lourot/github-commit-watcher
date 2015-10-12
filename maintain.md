@@ -38,6 +38,7 @@ $ sudo pip install dist/gicowa-7.8.9.tar.gz
 and test it briefly, e.g.
 
 ```
+$ gicowa --version
 $ gicowa watchlist AurelienLourot
 ```
 
