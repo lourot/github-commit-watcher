@@ -147,6 +147,10 @@ non-spam in your e-mail client. Or use the `--mailfrom` option.
 
 ## Changelog
 
+**1.2.2** (2015-10-12):
+
+  * Machine name appended to e-mail content.
+
 **1.2.1** (2015-08-20):
 
   * Documentation improved.

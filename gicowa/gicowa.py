@@ -3,6 +3,7 @@
 
 import argparse
 import github
+import os
 import socket
 import smtplib
 import sys
@@ -111,7 +112,8 @@ class Cli:
         if len(m.get().dest):
             if o.get().echoed.count("\n") > 1:
                 # FIXME this code is duplicated:
-                m.get().send_result(args.command, o.get().echoed)
+                email_content = o.get().echoed + "\nSent from %s.\n" % (os.uname()[1])
+                m.get().send_result(args.command, email_content)
                 o.get().echo("Sent by e-mail to %s" % ", ".join(m.get().dest))
             else:
                 o.get().echo("No e-mail sent.")
@@ -272,7 +274,8 @@ def main():
                 m.get().dest.add(cli.errorto)
             if len(m.get().dest):
                 # FIXME this code is duplicated:
-                m.get().send_result("error", o.get().echoed)
+                email_content = o.get().echoed + "\nSent from %s.\n" % (os.uname()[1])
+                m.get().send_result("error", email_content)
                 o.get().echo("Sent by e-mail to %s" % ", ".join(m.get().dest))
         except:
             print(error_msg)
