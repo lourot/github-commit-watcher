@@ -4,6 +4,7 @@
 import argparse
 import github
 import socket
+import sys
 import traceback
 from __init__ import __version__
 from impl.mail import Mail as m
@@ -12,8 +13,9 @@ from impl.persistence import Persistence as p
 from impl.timestamp import Timestamp
 
 class Cli:
-    def __init__(self, githublib):
+    def __init__(self, argv, githublib):
         self.errorto = None
+        self.__argv = argv
         self.__githublib = githublib
         self.__github = None
 
@@ -65,7 +67,7 @@ class Cli:
         self._add_argument_watcher_name(parser_lastwatchedcommits)
         self._add_arguments_since_committer_timestamp(parser_lastwatchedcommits)
 
-        args = parser.parse_args()
+        args = parser.parse_args(self.__argv)
 
         if args.mailfrom is not None:
             mailfrom = args.mailfrom.split(":", 3)
@@ -252,7 +254,7 @@ class Cli:
     _persist_option = "--persist"
 
 def main():
-    cli = Cli(github)
+    cli = Cli(sys.argv[1:], github)
     try:
         cli.run()
     except Exception as e:
