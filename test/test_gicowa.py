@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import gicowa.gicowa as gicowa
+from gicowa.impl.mail import Mail as m
 from gicowa.impl.output import Output as o
 from gicowa.impl.timestamp import Timestamp
+import os
 import unittest
 
 class MockGithubLib:
@@ -58,6 +60,30 @@ class MockPrint:
     def do_print(self, text):
         self.printed += text + "\n"
 
+class MockSmtplib:
+    class SMTPRecipientsRefused:
+        pass
+
+    class MockSmtp:
+        def __init__(self):
+            self.sent = None
+            self.sentfrom = None
+            self.sentto = None
+
+        def sendmail(self, sender, dest, content):
+            self.sent = content
+            self.sentfrom = sender
+            self.sentto = dest
+
+        def quit(self):
+            pass
+
+    def __init__(self):
+        self.smtp = self.MockSmtp()
+
+    def SMTP(self, server):
+        return self.smtp
+
 class GicowaTests(unittest.TestCase):
     def test_output(self):
         mock_stdout = MockPrint()
@@ -79,6 +105,7 @@ class GicowaTests(unittest.TestCase):
         self.assertEqual(actual, expected)
 
     def test_watchlist(self):
+        m.get().dest = set()
         mock_stdout = MockPrint()
         o.get().print_function = mock_stdout.do_print
         cli = gicowa.Cli(("watchlist", "myUsername"), MockGithubLib())
@@ -91,6 +118,7 @@ class GicowaTests(unittest.TestCase):
         self.assertEqual(actual, expected)
 
     def test_nocolor(self):
+        m.get().dest = set()
         mock_stdout = MockPrint()
         o.get().print_function = mock_stdout.do_print
         cli = gicowa.Cli(("--no-color", "watchlist", "myUsername"), MockGithubLib())
@@ -103,6 +131,7 @@ class GicowaTests(unittest.TestCase):
         self.assertEqual(actual, expected)
 
     def test_lastrepocommits(self):
+        m.get().dest = set()
         mock_stdout = MockPrint()
         o.get().print_function = mock_stdout.do_print
         cli = gicowa.Cli(("--no-color", "lastrepocommits", "myRepo", "since", "2015", "10", "11",
@@ -115,6 +144,7 @@ class GicowaTests(unittest.TestCase):
         self.assertEqual(actual, expected)
 
     def test_lastwatchedcommits(self):
+        m.get().dest = set()
         mock_stdout = MockPrint()
         o.get().print_function = mock_stdout.do_print
         cli = gicowa.Cli(("--no-color", "lastwatchedcommits", "myUsername", "since", "2015", "10",
@@ -129,3 +159,18 @@ class GicowaTests(unittest.TestCase):
                  + "mySubscription3 - Committed on myDate - myCommitter - myMessage\n"
         actual = mock_stdout.printed
         self.assertEqual(actual, expected)
+
+    def test_mailto(self):
+        mock_smtplib = MockSmtplib()
+        m.get().smtplib = mock_smtplib
+        o.get().echoed = ""
+        cli = gicowa.Cli(("--no-color", "--mailto", "myMail@myDomain.com", "watchlist",
+                          "myUsername"), MockGithubLib())
+        cli.run()
+        expected = "watchlist myUsername\n" \
+                 + "mySubscription1\n" \
+                 + "mySubscription2\n" \
+                 + "mySubscription3\n" \
+                 + "\nSent from %s.\n" % (os.uname()[1])
+        actual = mock_smtplib.smtp.sent
+        self.assertIn(expected, actual)
