@@ -16,13 +16,14 @@ class Output:
             assert False, "I'm a singleton."
         Output.__instance = self
 
+        self.print_function = None
         self.colored = True
 
         # Contains at any time the whole text that has been echoed by this instance:
         self.echoed = ""
 
     def echo(self, text):
-        print(text)
+        self.print_function(text)
         self.echoed += text + "\n"
 
     def red(self, text):

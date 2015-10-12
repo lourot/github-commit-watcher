@@ -253,7 +253,11 @@ class Cli:
 
     _persist_option = "--persist"
 
+def _print(text):
+    print(text)
+
 def main():
+    o.get().print_function = _print
     cli = Cli(sys.argv[1:], github)
     try:
         cli.run()
