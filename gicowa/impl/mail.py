@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from email.mime.text import MIMEText
-import smtplib
 
 class Mail:
     __instance = None # Singleton
@@ -19,6 +18,7 @@ class Mail:
             assert False, "I'm a singleton."
         Mail.__instance = self
 
+        self.smtplib = None
         self.server = "localhost"
         self.port = None
         self.sender = "gicowa@lourot.com"
@@ -33,13 +33,13 @@ class Mail:
         email["From"] = self.sender
         email["To"] = ", ".join(self.dest)
         if self.port is None or self.password is None:
-            smtp = smtplib.SMTP(self.server)
+            smtp = self.smtplib.SMTP(self.server)
         else:
-            smtp = smtplib.SMTP_SSL(self.server, self.port)
+            smtp = self.smtplib.SMTP_SSL(self.server, self.port)
             smtp.login(self.sender, self.password)
         try:
             smtp.sendmail(self.sender, self.dest, email.as_string())
-        except smtplib.SMTPRecipientsRefused as e:
+        except self.smtplib.SMTPRecipientsRefused as e:
             e.args += ("%s addresses malformed?" % ", ".join(self.dest),)
             raise
         smtp.quit()

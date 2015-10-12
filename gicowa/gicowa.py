@@ -4,6 +4,7 @@
 import argparse
 import github
 import socket
+import smtplib
 import sys
 import traceback
 from __init__ import __version__
@@ -257,6 +258,7 @@ def _print(text):
     print(text)
 
 def main():
+    m.get().smtplib = smtplib
     o.get().print_function = _print
     cli = Cli(sys.argv[1:], github)
     try:
