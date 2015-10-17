@@ -167,7 +167,8 @@ non-spam in your e-mail client. Or use the `--mailfrom` option.
 
   * Documentation improved.
 
-## Initial Author
+## Contributors
 
-[Aurelien Lourot](http://lourot.com/)
+  * [Aurelien Lourot](http://lourot.com/)
+  * [cassiodoroVicinetti](https://github.com/cassiodoroVicinetti)
 
