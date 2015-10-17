@@ -147,6 +147,10 @@ non-spam in your e-mail client. Or use the `--mailfrom` option.
 
 ## Changelog
 
+**1.2.3** (2015-10-17):
+
+  * Exception on non-ASCII characters fixed.
+
 **1.2.2** (2015-10-12):
 
   * Machine name appended to e-mail content.
