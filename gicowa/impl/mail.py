@@ -28,7 +28,7 @@ class Mail:
     def send_result(self, command, output):
         """Sends command output by e-mail.
         """
-        email = MIMEText(output)
+        email = MIMEText(output, "plain", "utf-8")
         email["Subject"] = "[gicowa] %s." % (command)
         email["From"] = self.sender
         email["To"] = ", ".join(self.dest)

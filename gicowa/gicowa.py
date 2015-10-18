@@ -266,7 +266,7 @@ def main():
     try:
         cli.run()
     except Exception as e:
-        error_msg = "Oops, an error occured.\n" + "\n".join(str(i) for i in e.args) + "\n\n"
+        error_msg = "Oops, an error occured.\n" + "\n".join(unicode(i) for i in e.args) + "\n\n"
         error_msg += traceback.format_exc()
         try:
             o.get().echo(error_msg)
