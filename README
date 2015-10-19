@@ -149,7 +149,7 @@ You can send the output of any command to yourself by e-mail:
 Changelog
 ---------
 
-**1.2.3** (2015-10-17) to **1.2.4** (2015-10-19):
+**1.2.3** (2015-10-17) to **1.2.5** (2015-10-19):
 
 -  Exception on non-ASCII characters fixed.
 

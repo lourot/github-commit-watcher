@@ -147,7 +147,7 @@ non-spam in your e-mail client. Or use the `--mailfrom` option.
 
 ## Changelog
 
-**1.2.3** (2015-10-17) to **1.2.4** (2015-10-19):
+**1.2.3** (2015-10-17) to **1.2.5** (2015-10-19):
 
   * Exception on non-ASCII characters fixed.
 
