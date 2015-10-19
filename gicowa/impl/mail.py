@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from email.mime.text import MIMEText
-
 class Mail:
     __instance = None # Singleton
 
@@ -19,6 +17,7 @@ class Mail:
         Mail.__instance = self
 
         self.smtplib = None
+        self.mimetextlib = None
         self.server = "localhost"
         self.port = None
         self.sender = "gicowa@lourot.com"
@@ -28,7 +27,7 @@ class Mail:
     def send_result(self, command, output):
         """Sends command output by e-mail.
         """
-        email = MIMEText(output, "plain", "utf-8")
+        email = self.mimetextlib(output, "plain", "utf-8")
         email["Subject"] = "[gicowa] %s." % (command)
         email["From"] = self.sender
         email["To"] = ", ".join(self.dest)

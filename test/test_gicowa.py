@@ -84,6 +84,20 @@ class MockSmtplib:
     def SMTP(self, server):
         return self.smtp
 
+class MockMimetextlib:
+    class MockMimetext:
+        def __init__(self, content):
+            self.__content = content
+
+        def __setitem__(self, key, val):
+            pass
+
+        def as_string(self):
+            return self.__content
+
+    def __call__(self, content, subtype, charset):
+        return self.MockMimetext(content)
+
 class GicowaTests(unittest.TestCase):
     def test_output(self):
         mock_stdout = MockPrint()
@@ -163,6 +177,7 @@ class GicowaTests(unittest.TestCase):
     def test_mailto(self):
         mock_smtplib = MockSmtplib()
         m.get().smtplib = mock_smtplib
+        m.get().mimetextlib = MockMimetextlib()
         o.get().echoed = ""
         cli = gicowa.Cli(("--no-color", "--mailto", "myMail@myDomain.com", "watchlist",
                           "myUsername"), MockGithubLib())

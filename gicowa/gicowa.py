@@ -8,6 +8,7 @@ import socket
 import smtplib
 import sys
 import traceback
+from email.mime.text import MIMEText
 from __init__ import __version__
 from impl.mail import Mail as m
 from impl.output import Output as o
@@ -261,6 +262,7 @@ def _print(text):
 
 def main():
     m.get().smtplib = smtplib
+    m.get().mimetextlib = MIMEText
     o.get().print_function = _print
     cli = Cli(sys.argv[1:], github)
     try:
