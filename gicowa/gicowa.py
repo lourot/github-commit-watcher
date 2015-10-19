@@ -258,7 +258,7 @@ class Cli:
     _persist_option = "--persist"
 
 def _print(text):
-    print(text)
+    print(text.encode("utf-8"))
 
 def main():
     m.get().smtplib = smtplib
@@ -280,5 +280,5 @@ def main():
                 m.get().send_result("error", email_content)
                 o.get().echo("Sent by e-mail to %s" % ", ".join(m.get().dest))
         except:
-            print(error_msg)
+            print(error_msg.encode("utf-8"))
         raise
