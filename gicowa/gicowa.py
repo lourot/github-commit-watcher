@@ -120,12 +120,9 @@ class Cli:
             raise
 
         if len(self.__mail_sender.dest):
-            if self.__output.echoed.count("\n") > 1:
-                # FIXME this code is duplicated:
-                email_content = self.__output.echoed + "\nSent from %s.\n" % (os.uname()[1])
-                self.__mail_sender.send_result(args.command, email_content)
-                self.__output.echo("Sent by e-mail to %s" % ", ".join(self.__mail_sender.dest))
-            else:
+            email_sent = _send_output_by_mail_if_necessary(self.__mail_sender, self.__output,
+                                                           args.command)
+            if not email_sent:
                 self.__output.echo("No e-mail sent.")
 
         if args.persist:
@@ -266,6 +263,18 @@ class Cli:
 
     _persist_option = "--persist"
 
+def _send_output_by_mail_if_necessary(mail_sender, output, email_subject):
+    """Returns True if an e-mail was sent.
+    @param mail_sender: Dependency. Inject an instance of impl.mail.MailSender.
+    @param output: Dependency. Inject an instance of impl.output.Output.
+    """
+    if output.echoed.count("\n") <= 1:
+        return False
+    email_content = output.echoed + "\nSent from %s.\n" % (os.uname()[1])
+    mail_sender.send_result(email_subject, email_content)
+    output.echo("Sent by e-mail to %s" % ", ".join(mail_sender.dest))
+    return True
+
 def _print(text):
     print(text.encode("utf-8"))
 
@@ -283,10 +292,7 @@ def main():
             if cli.errorto is not None:
                 mail_sender.dest.add(cli.errorto)
             if len(mail_sender.dest):
-                # FIXME this code is duplicated:
-                email_content = output.echoed + "\nSent from %s.\n" % (os.uname()[1])
-                mail_sender.send_result("error", email_content)
-                output.echo("Sent by e-mail to %s" % ", ".join(mail_sender.dest))
+                _send_output_by_mail_if_necessary(mail_sender, output, "error")
         except:
             print(error_msg.encode("utf-8"))
         raise
