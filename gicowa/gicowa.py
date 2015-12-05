@@ -11,21 +11,23 @@ import traceback
 from email.mime.text import MIMEText
 from __init__ import __version__
 import impl.mail
-from impl.output import Output as o
+import impl.output
 from impl.persistence import Persistence as p
 from impl.timestamp import Timestamp
 
 class Cli:
-    def __init__(self, argv, githublib, mail_sender):
+    def __init__(self, argv, githublib, mail_sender, output):
         """Main class.
         @param githublib: Dependency. Inject github.
         @param mail_sender: Dependency. Inject an instance of impl.mail.MailSender.
+        @param output: Dependency. Inject an instance of impl.output.Output.
         """
         self.errorto = None
         self.__argv = argv
         self.__githublib = githublib
         self.__github = None
         self.__mail_sender = mail_sender
+        self.__output = output
 
     def run(self):
         parser = argparse.ArgumentParser(description="watch GitHub commits easily")
@@ -91,7 +93,7 @@ class Cli:
             self.__mail_sender.dest.add(args.mailto)
         self.errorto = args.errorto
 
-        o.get().colored = not args.no_color
+        self.__output.colored = not args.no_color
 
         if args.credentials is not None:
             credentials = args.credentials.split(":", 1)
@@ -116,13 +118,13 @@ class Cli:
             raise
 
         if len(self.__mail_sender.dest):
-            if o.get().echoed.count("\n") > 1:
+            if self.__output.echoed.count("\n") > 1:
                 # FIXME this code is duplicated:
-                email_content = o.get().echoed + "\nSent from %s.\n" % (os.uname()[1])
+                email_content = self.__output.echoed + "\nSent from %s.\n" % (os.uname()[1])
                 self.__mail_sender.send_result(args.command, email_content)
-                o.get().echo("Sent by e-mail to %s" % ", ".join(self.__mail_sender.dest))
+                self.__output.echo("Sent by e-mail to %s" % ", ".join(self.__mail_sender.dest))
             else:
-                o.get().echo("No e-mail sent.")
+                self.__output.echo("No e-mail sent.")
 
         if args.persist:
             p.get().save()
@@ -156,10 +158,10 @@ class Cli:
         Prints all watched repos of 'args.username'.
         """
         command = args.command + " " + args.username
-        o.get().echo(command)
+        self.__output.echo(command)
 
         for repo in self.__get_watchlist(args.username):
-            o.get().echo(o.get().red(repo))
+            self.__output.echo(self.__output.red(repo))
 
     def __lastrepocommits(self, args):
         """Implements 'lastrepocommits' command.
@@ -176,13 +178,13 @@ class Cli:
                 since = Timestamp(p.get().timestamps[command])
             except KeyError as e: # this command gets executed for the first time
                 since = now
-        o.get().echo(command + " since " + str(since))
+        self.__output.echo(command + " since " + str(since))
 
         pushed = self.__has_been_pushed(args.repo, since.to_datetime())
         if pushed is not None:
-            o.get().echo(pushed)
+            self.__output.echo(pushed)
         for commit in self.__get_last_commits(args.repo, since.to_datetime()):
-            o.get().echo(commit)
+            self.__output.echo(commit)
 
         # Remember this last execution:
         p.get().timestamps[command] = now.data
@@ -202,14 +204,14 @@ class Cli:
                 since = Timestamp(p.get().timestamps[command])
             except KeyError as e: # this command gets executed for the first time
                 since = now
-        o.get().echo(command + " since " + str(since))
+        self.__output.echo(command + " since " + str(since))
 
         for repo in self.__get_watchlist(args.username):
             pushed = self.__has_been_pushed(repo, since.to_datetime())
             if pushed is not None:
-                o.get().echo("%s - %s" % (o.get().red(repo), pushed))
+                self.__output.echo("%s - %s" % (self.__output.red(repo), pushed))
             for commit in self.__get_last_commits(repo, since.to_datetime()):
-                o.get().echo("%s - %s" % (o.get().red(repo), commit))
+                self.__output.echo("%s - %s" % (self.__output.red(repo), commit))
 
         # Remember this last execution:
         p.get().timestamps[command] = now.data
@@ -241,8 +243,8 @@ class Cli:
         for i in repo.get_commits(since=since):
             commit = repo.get_git_commit(i.sha)
             result.append("Committed on %s - %s - %s"
-                          % (o.get().green(commit.committer.date),
-                             o.get().blue(commit.committer.name), commit.message))
+                          % (self.__output.green(commit.committer.date),
+                             self.__output.blue(commit.committer.name), commit.message))
         return result
 
     def __has_been_pushed(self, repo_full_name, since):
@@ -258,7 +260,7 @@ class Cli:
             raise
 
         if repo.pushed_at >= since:
-            return "Last commit pushed on " + o.get().green(repo.pushed_at)
+            return "Last commit pushed on " + self.__output.green(repo.pushed_at)
 
     _persist_option = "--persist"
 
@@ -267,22 +269,22 @@ def _print(text):
 
 def main():
     mail_sender = impl.mail.MailSender(smtplib, MIMEText)
-    o.get().print_function = _print
-    cli = Cli(sys.argv[1:], github, mail_sender)
+    output = impl.output.Output(_print)
+    cli = Cli(sys.argv[1:], github, mail_sender, output)
     try:
         cli.run()
     except Exception as e:
         error_msg = "Oops, an error occured.\n" + "\n".join(unicode(i) for i in e.args) + "\n\n"
         error_msg += traceback.format_exc()
         try:
-            o.get().echo(error_msg)
+            output.echo(error_msg)
             if cli.errorto is not None:
                 mail_sender.dest.add(cli.errorto)
             if len(mail_sender.dest):
                 # FIXME this code is duplicated:
-                email_content = o.get().echoed + "\nSent from %s.\n" % (os.uname()[1])
+                email_content = output.echoed + "\nSent from %s.\n" % (os.uname()[1])
                 mail_sender.send_result("error", email_content)
-                o.get().echo("Sent by e-mail to %s" % ", ".join(mail_sender.dest))
+                output.echo("Sent by e-mail to %s" % ", ".join(mail_sender.dest))
         except:
             print(error_msg.encode("utf-8"))
         raise

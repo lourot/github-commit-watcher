@@ -2,28 +2,18 @@
 # -*- coding: utf-8 -*-
 
 class Output:
-    __instance = None # Singleton
-
-    @classmethod
-    def get(cls):
-        if Output.__instance is None:
-            Output()
-        assert Output.__instance is not None
-        return Output.__instance
-
-    def __init__(self):
-        if Output.__instance is not None:
-            assert False, "I'm a singleton."
-        Output.__instance = self
-
-        self.print_function = None
+    def __init__(self, print_function):
+        """
+        @param print_function: Dependency. Inject print.
+        """
+        self.__print_function = print_function
         self.colored = True
 
         # Contains at any time the whole text that has been echoed by this instance:
         self.echoed = ""
 
     def echo(self, text):
-        self.print_function(text)
+        self.__print_function(text)
         self.echoed += text + "\n"
 
     def red(self, text):

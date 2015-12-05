@@ -2,7 +2,7 @@
 
 import gicowa.gicowa as gcw
 import gicowa.impl.mail as mail
-from gicowa.impl.output import Output as o
+import gicowa.impl.output as output
 from gicowa.impl.timestamp import Timestamp
 import os
 import unittest
@@ -101,11 +101,12 @@ class MockMimetextlib:
 class GicowaTests(unittest.TestCase):
     def test_output(self):
         mock_stdout = MockPrint()
-        o.get().print_function = mock_stdout.do_print
-        o.get().echoed = ""
-        o.get().echo("hello")
-        o.get().echo("hi")
-        self.assertEqual(o.get().echoed, mock_stdout.printed)
+        out = output.Output(mock_stdout.do_print)
+        out.print_function = mock_stdout.do_print
+        out.echoed = ""
+        out.echo("hello")
+        out.echo("hi")
+        self.assertEqual(out.echoed, mock_stdout.printed)
 
     def test_timestamp(self):
         stamp = Timestamp({"YYYY": 2015,
@@ -120,8 +121,8 @@ class GicowaTests(unittest.TestCase):
 
     def test_watchlist(self):
         mock_stdout = MockPrint()
-        o.get().print_function = mock_stdout.do_print
-        cli = gcw.Cli(("watchlist", "myUsername"), MockGithubLib(), mail.MailSender(None, None))
+        cli = gcw.Cli(("watchlist", "myUsername"), MockGithubLib(), mail.MailSender(None, None),
+                      output.Output(mock_stdout.do_print))
         cli.run()
         expected = "watchlist myUsername\n" \
                  + "\033[31mmySubscription1\033[0m\n" \
@@ -132,9 +133,8 @@ class GicowaTests(unittest.TestCase):
 
     def test_nocolor(self):
         mock_stdout = MockPrint()
-        o.get().print_function = mock_stdout.do_print
         cli = gcw.Cli(("--no-color", "watchlist", "myUsername"), MockGithubLib(),
-                      mail.MailSender(None, None))
+                      mail.MailSender(None, None), output.Output(mock_stdout.do_print))
         cli.run()
         expected = "watchlist myUsername\n" \
                  + "mySubscription1\n" \
@@ -145,9 +145,9 @@ class GicowaTests(unittest.TestCase):
 
     def test_lastrepocommits(self):
         mock_stdout = MockPrint()
-        o.get().print_function = mock_stdout.do_print
         cli = gcw.Cli(("--no-color", "lastrepocommits", "myRepo", "since", "2015", "10", "11",
-                       "20", "08", "00"), MockGithubLib(), mail.MailSender(None, None))
+                       "20", "08", "00"), MockGithubLib(), mail.MailSender(None, None),
+                      output.Output(mock_stdout.do_print))
         cli.run()
         expected = "lastrepocommits myRepo since 2015-10-11 20:08:00\n" \
                  + "Last commit pushed on 2015-10-11 20:22:24\n" \
@@ -157,9 +157,9 @@ class GicowaTests(unittest.TestCase):
 
     def test_lastwatchedcommits(self):
         mock_stdout = MockPrint()
-        o.get().print_function = mock_stdout.do_print
         cli = gcw.Cli(("--no-color", "lastwatchedcommits", "myUsername", "since", "2015", "10",
-                       "11", "20", "08", "00"), MockGithubLib(), mail.MailSender(None, None))
+                       "11", "20", "08", "00"), MockGithubLib(), mail.MailSender(None, None),
+                      output.Output(mock_stdout.do_print))
         cli.run()
         expected = "lastwatchedcommits myUsername since 2015-10-11 20:08:00\n" \
                  + "mySubscription1 - Last commit pushed on 2015-10-11 20:22:24\n" \
@@ -172,11 +172,12 @@ class GicowaTests(unittest.TestCase):
         self.assertEqual(actual, expected)
 
     def test_mailto(self):
+        mock_stdout = MockPrint()
         mock_smtplib = MockSmtplib()
-        o.get().echoed = ""
         cli = gcw.Cli(("--no-color", "--mailto", "myMail@myDomain.com", "watchlist",
                        "myUsername"), MockGithubLib(),
-                      mail.MailSender(mock_smtplib, MockMimetextlib()))
+                      mail.MailSender(mock_smtplib, MockMimetextlib()),
+                      output.Output(mock_stdout.do_print))
         cli.run()
         expected = "watchlist myUsername\n" \
                  + "mySubscription1\n" \
