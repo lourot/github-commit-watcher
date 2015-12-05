@@ -12,7 +12,7 @@ from email.mime.text import MIMEText
 from __init__ import __version__
 import impl.mail
 import impl.output
-from impl.persistence import Persistence as p
+import impl.persistence
 from impl.timestamp import Timestamp
 
 class Cli:
@@ -28,6 +28,7 @@ class Cli:
         self.__github = None
         self.__mail_sender = mail_sender
         self.__output = output
+        self.__memory = impl.persistence.Memory()
 
     def run(self):
         parser = argparse.ArgumentParser(description="watch GitHub commits easily")
@@ -52,7 +53,8 @@ class Cli:
                             + "error (e.g. 'aurelien.lourot@gmail.com')")
 
         parser.add_argument(self._persist_option, action="store_true",
-                    help="gicowa will keep track of the last commands run in %s" % (p.filename))
+                    help="gicowa will keep track of the last commands run in %s" %
+                            (self.__memory.filename))
 
         subparsers = parser.add_subparsers(help="available commands")
 
@@ -127,7 +129,7 @@ class Cli:
                 self.__output.echo("No e-mail sent.")
 
         if args.persist:
-            p.get().save()
+            self.__memory.save()
 
     @classmethod
     def _add_argument_watcher_name(cls, parser):
@@ -175,7 +177,7 @@ class Cli:
             since = Timestamp(args)
         else:
             try:
-                since = Timestamp(p.get().timestamps[command])
+                since = Timestamp(self.__memory.timestamps[command])
             except KeyError as e: # this command gets executed for the first time
                 since = now
         self.__output.echo(command + " since " + str(since))
@@ -187,7 +189,7 @@ class Cli:
             self.__output.echo(commit)
 
         # Remember this last execution:
-        p.get().timestamps[command] = now.data
+        self.__memory.timestamps[command] = now.data
 
     def __lastwatchedcommits(self, args):
         """Implements 'lastwatchedcommits' command.
@@ -201,7 +203,7 @@ class Cli:
             since = Timestamp(args)
         else:
             try:
-                since = Timestamp(p.get().timestamps[command])
+                since = Timestamp(self.__memory.timestamps[command])
             except KeyError as e: # this command gets executed for the first time
                 since = now
         self.__output.echo(command + " since " + str(since))
@@ -214,7 +216,7 @@ class Cli:
                 self.__output.echo("%s - %s" % (self.__output.red(repo), commit))
 
         # Remember this last execution:
-        p.get().timestamps[command] = now.data
+        self.__memory.timestamps[command] = now.data
 
     def __get_watchlist(self, username):
         """Returns list of all watched repos of 'username'.
