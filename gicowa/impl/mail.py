@@ -1,23 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-class Mail:
-    __instance = None # Singleton
-
-    @classmethod
-    def get(cls):
-        if Mail.__instance is None:
-            Mail()
-        assert Mail.__instance is not None
-        return Mail.__instance
-
-    def __init__(self):
-        if Mail.__instance is not None:
-            assert False, "I'm a singleton."
-        Mail.__instance = self
-
-        self.smtplib = None
-        self.mimetextlib = None
+class MailSender:
+    def __init__(self, smtplib, mimetextlib):
+        """
+        @param smtplib: Dependency. Inject smtplib.
+        @param mimetextlib: Dependency. Inject email.mime.text.MIMEText.
+        """
+        self.__smtplib = smtplib
+        self.__mimetextlib = mimetextlib
         self.server = "localhost"
         self.port = None
         self.sender = "gicowa@lourot.com"
@@ -27,18 +18,18 @@ class Mail:
     def send_result(self, command, output):
         """Sends command output by e-mail.
         """
-        email = self.mimetextlib(output, "plain", "utf-8")
+        email = self.__mimetextlib(output, "plain", "utf-8")
         email["Subject"] = "[gicowa] %s." % (command)
         email["From"] = self.sender
         email["To"] = ", ".join(self.dest)
         if self.port is None or self.password is None:
-            smtp = self.smtplib.SMTP(self.server)
+            smtp = self.__smtplib.SMTP(self.server)
         else:
-            smtp = self.smtplib.SMTP_SSL(self.server, self.port)
+            smtp = self.__smtplib.SMTP_SSL(self.server, self.port)
             smtp.login(self.sender, self.password)
         try:
             smtp.sendmail(self.sender, self.dest, email.as_string())
-        except self.smtplib.SMTPRecipientsRefused as e:
+        except self.__smtplib.SMTPRecipientsRefused as e:
             e.args += ("%s addresses malformed?" % ", ".join(self.dest),)
             raise
         smtp.quit()

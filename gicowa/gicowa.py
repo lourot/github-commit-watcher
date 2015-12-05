@@ -10,17 +10,22 @@ import sys
 import traceback
 from email.mime.text import MIMEText
 from __init__ import __version__
-from impl.mail import Mail as m
+import impl.mail
 from impl.output import Output as o
 from impl.persistence import Persistence as p
 from impl.timestamp import Timestamp
 
 class Cli:
-    def __init__(self, argv, githublib):
+    def __init__(self, argv, githublib, mail_sender):
+        """Main class.
+        @param githublib: Dependency. Inject github.
+        @param mail_sender: Dependency. Inject an instance of impl.mail.MailSender.
+        """
         self.errorto = None
         self.__argv = argv
         self.__githublib = githublib
         self.__github = None
+        self.__mail_sender = mail_sender
 
     def run(self):
         parser = argparse.ArgumentParser(description="watch GitHub commits easily")
@@ -75,15 +80,15 @@ class Cli:
         if args.mailfrom is not None:
             mailfrom = args.mailfrom.split(":", 3)
             try:
-                m.get().server = mailfrom[0]
-                m.get().port = mailfrom[1]
-                m.get().sender = mailfrom[2]
-                m.get().password = mailfrom[3]
+                self.__mail_sender.server = mailfrom[0]
+                self.__mail_sender.port = mailfrom[1]
+                self.__mail_sender.sender = mailfrom[2]
+                self.__mail_sender.password = mailfrom[3]
             except IndexError as e:
                 e.args += ("Bad mailfrom syntax.",)
                 raise
         if args.mailto is not None:
-            m.get().dest.add(args.mailto)
+            self.__mail_sender.dest.add(args.mailto)
         self.errorto = args.errorto
 
         o.get().colored = not args.no_color
@@ -110,12 +115,12 @@ class Cli:
             e.args += ("No internet connection?",)
             raise
 
-        if len(m.get().dest):
+        if len(self.__mail_sender.dest):
             if o.get().echoed.count("\n") > 1:
                 # FIXME this code is duplicated:
                 email_content = o.get().echoed + "\nSent from %s.\n" % (os.uname()[1])
-                m.get().send_result(args.command, email_content)
-                o.get().echo("Sent by e-mail to %s" % ", ".join(m.get().dest))
+                self.__mail_sender.send_result(args.command, email_content)
+                o.get().echo("Sent by e-mail to %s" % ", ".join(self.__mail_sender.dest))
             else:
                 o.get().echo("No e-mail sent.")
 
@@ -261,10 +266,9 @@ def _print(text):
     print(text.encode("utf-8"))
 
 def main():
-    m.get().smtplib = smtplib
-    m.get().mimetextlib = MIMEText
+    mail_sender = impl.mail.MailSender(smtplib, MIMEText)
     o.get().print_function = _print
-    cli = Cli(sys.argv[1:], github)
+    cli = Cli(sys.argv[1:], github, mail_sender)
     try:
         cli.run()
     except Exception as e:
@@ -273,12 +277,12 @@ def main():
         try:
             o.get().echo(error_msg)
             if cli.errorto is not None:
-                m.get().dest.add(cli.errorto)
-            if len(m.get().dest):
+                mail_sender.dest.add(cli.errorto)
+            if len(mail_sender.dest):
                 # FIXME this code is duplicated:
                 email_content = o.get().echoed + "\nSent from %s.\n" % (os.uname()[1])
-                m.get().send_result("error", email_content)
-                o.get().echo("Sent by e-mail to %s" % ", ".join(m.get().dest))
+                mail_sender.send_result("error", email_content)
+                o.get().echo("Sent by e-mail to %s" % ", ".join(mail_sender.dest))
         except:
             print(error_msg.encode("utf-8"))
         raise
