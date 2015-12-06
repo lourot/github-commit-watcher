@@ -155,6 +155,8 @@ class Cli:
     def __watchlist(self, args):
         """Implements 'watchlist' command.
         Prints all watched repos of 'args.username'.
+
+        @param args: from argparse.
         """
         command = args.command + " " + args.username
         self.__output.echo(command)
@@ -162,58 +164,67 @@ class Cli:
         for repo in self.__get_watchlist(args.username):
             self.__output.echo(self.__output.red(repo))
 
-    def __lastrepocommits(self, args):
+    def _since_command(command_argname):
+        """Decorator for commands that require a 'since' argument.
+
+        @param command_argname: Name of args's property containing args's command argument.
+        """
+        def wrapper(func):
+            def decorated(self, args):
+                """
+                @param args: from argparse.
+                """
+                now = Timestamp()
+                command = args.command + " " + getattr(args, command_argname)
+                if not args.sincelast:
+                    since = Timestamp(args)
+                else:
+                    try:
+                        since = Timestamp(self.__memory.timestamps[command])
+                    except KeyError as e: # this command gets executed for the first time
+                        since = now
+                self.__output.echo(command + " since " + str(since))
+
+                result = func(self, args, since)
+
+                # Remember this last execution:
+                self.__memory.timestamps[command] = now.data
+
+                return result
+
+            return decorated
+        return wrapper
+
+    @_since_command("repo")
+    def __lastrepocommits(self, args, since):
         """Implements 'lastrepocommits' command.
         Prints all commits on 'args.repo' with committer timestamp bigger than
         'args.YYYY,MM,DD,hh,mm,ss'.
-        """
-        # FIXME this code is duplicated:
-        now = Timestamp()
-        command = args.command + " " + args.repo
-        if not args.sincelast:
-            since = Timestamp(args)
-        else:
-            try:
-                since = Timestamp(self.__memory.timestamps[command])
-            except KeyError as e: # this command gets executed for the first time
-                since = now
-        self.__output.echo(command + " since " + str(since))
 
+        @param args: from argparse.
+        @param since: from decoration.
+        """
         pushed = self.__has_been_pushed(args.repo, since.to_datetime())
         if pushed is not None:
             self.__output.echo(pushed)
         for commit in self.__get_last_commits(args.repo, since.to_datetime()):
             self.__output.echo(commit)
 
-        # Remember this last execution:
-        self.__memory.timestamps[command] = now.data
-
-    def __lastwatchedcommits(self, args):
+    @_since_command("username")
+    def __lastwatchedcommits(self, args, since):
         """Implements 'lastwatchedcommits' command.
         Prints all commits on repos watched by 'args.username' with committer timestamp bigger than
         'args.YYYY,MM,DD,hh,mm,ss'.
-        """
-        # FIXME this code is duplicated:
-        now = Timestamp()
-        command = args.command + " " + args.username
-        if not args.sincelast:
-            since = Timestamp(args)
-        else:
-            try:
-                since = Timestamp(self.__memory.timestamps[command])
-            except KeyError as e: # this command gets executed for the first time
-                since = now
-        self.__output.echo(command + " since " + str(since))
 
+        @param args: from argparse.
+        @param since: from decoration.
+        """
         for repo in self.__get_watchlist(args.username):
             pushed = self.__has_been_pushed(repo, since.to_datetime())
             if pushed is not None:
                 self.__output.echo("%s - %s" % (self.__output.red(repo), pushed))
             for commit in self.__get_last_commits(repo, since.to_datetime()):
                 self.__output.echo("%s - %s" % (self.__output.red(repo), commit))
-
-        # Remember this last execution:
-        self.__memory.timestamps[command] = now.data
 
     def __get_watchlist(self, username):
         """Returns list of all watched repos of 'username'.
