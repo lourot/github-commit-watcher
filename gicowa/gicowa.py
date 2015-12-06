@@ -241,14 +241,7 @@ class Cli:
     def __get_last_commits(self, repo_full_name, since):
         """Returns list of all commits on 'repo_full_name' with committer timestamp bigger than 'since'.
         """
-        # FIXME this code is duplicated:
-        try:
-            repo = self.__github.get_repo(repo_full_name)
-        except self.__githublib.GithubException as e:
-            if e.status == 404:
-                e.args += ("%s repo doesn't exist?" % (repo_full_name),)
-            raise
-
+        repo = self.__get_repo(repo_full_name)
         result = []
         for i in repo.get_commits(since=since):
             commit = repo.get_git_commit(i.sha)
@@ -261,16 +254,19 @@ class Cli:
         """Returns string describing last push timestamp of 'repo_full_name''s last commit if after
         'since'. Returns None otherwise.
         """
-        # FIXME this code is duplicated:
-        try:
-            repo = self.__github.get_repo(repo_full_name)
-        except self.__githublib.GithubException as e:
-            if e.status == 404:
-                e.args += ("%s repo doesn't exist?" % (repo_full_name),)
-            raise
-
+        repo = self.__get_repo(repo_full_name)
         if repo.pushed_at >= since:
             return "Last commit pushed on " + self.__output.green(repo.pushed_at)
+
+    def __get_repo(self, full_name):
+        """Returns github repository. Raises if couldn't be found.
+        """
+        try:
+            return self.__github.get_repo(full_name)
+        except self.__githublib.GithubException as e:
+            if e.status == 404:
+                e.args += ("%s repo doesn't exist?" % (full_name),)
+            raise
 
     _persist_option = "--persist"
 
