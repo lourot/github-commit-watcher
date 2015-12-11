@@ -3,6 +3,8 @@
 
 import datetime
 
+import encoding
+
 class Timestamp:
     fields = (("YYYY", "year"  ),
               ("MM"  , "month" ),
@@ -26,8 +28,11 @@ class Timestamp:
             else:
                 self.data[field[0]] = getattr(now, field[1])
 
+    def __unicode__(self):
+        return unicode(self.to_datetime())
+
     def __str__(self):
-        return str(self.to_datetime())
+        return unicode(self).encode(encoding.preferred)
 
     def to_datetime(self):
         try:

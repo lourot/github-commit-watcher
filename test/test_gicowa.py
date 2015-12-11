@@ -4,7 +4,9 @@ import gicowa.gicowa as gcw
 import gicowa.impl.mail as mail
 import gicowa.impl.output as output
 from gicowa.impl.timestamp import Timestamp
+import codecs
 import os
+import sys
 import unittest
 
 class MockGithubLib:
@@ -116,7 +118,7 @@ class GicowaTests(unittest.TestCase):
                            "mm":   22,
                            "ss":   24})
         expected = "2015-10-11 20:22:24"
-        actual = str(stamp)
+        actual = unicode(stamp)
         self.assertEqual(actual, expected)
 
     def test_watchlist(self):
@@ -186,3 +188,24 @@ class GicowaTests(unittest.TestCase):
                  + "\nSent from %s.\n" % (os.uname()[1])
         actual = mock_smtplib.smtp.sent
         self.assertIn(expected, actual)
+
+    def test_print_utf8_string(self):
+        utf8_string = "Tschüß!"
+        gcw._print(utf8_string) # shouldn't raise
+
+    def test_print_utf8_string_to_ascii_stdout(self):
+        # Change stdout's encoding to ascii:
+        default_stdout = sys.stdout
+        sys.stdout = codecs.getwriter("ascii")(default_stdout)
+
+        # Show that the default print fails to print a utf-8 string to an ascii stdout.
+        # See http://nedbatchelder.com/text/unipain/unipain.html
+        utf8_string = "Tschüß!"
+        with self.assertRaises(UnicodeDecodeError):
+            print(utf8_string)
+
+        # Show that our _print is able to do it:
+        gcw._print(utf8_string)
+
+        # Restore stdout's encoding (to utf-8):
+        sys.stdout = default_stdout

@@ -10,6 +10,7 @@ import sys
 import traceback
 from email.mime.text import MIMEText
 from __init__ import __version__
+import impl.encoding
 import impl.mail
 import impl.output
 import impl.persistence
@@ -183,7 +184,7 @@ class Cli:
                         since = Timestamp(self.__memory.timestamps[command])
                     except KeyError as e: # this command gets executed for the first time
                         since = now
-                self.__output.echo(command + " since " + str(since))
+                self.__output.echo(command + " since " + unicode(since))
 
                 result = func(self, args, since)
 
@@ -283,7 +284,25 @@ def _send_output_by_mail_if_necessary(mail_sender, output, email_subject):
     return True
 
 def _print(text):
-    print(text.encode("utf-8"))
+    """coding/decoding-friendly version of print().
+    See http://nedbatchelder.com/text/unipain/unipain.html
+    @param text: Must be either a unicode or a utf-8 str.
+    """
+    unicode_text = text
+    if isinstance(unicode_text, str):
+        unicode_text = text.decode(impl.encoding.preferred, "replace")
+
+    try:
+        print(text)
+        return
+    except UnicodeDecodeError:
+        pass
+    except UnicodeEncodeError:
+        pass
+
+    # Well, let's make it ascii then:
+    ascii_text = unicode_text.encode("ascii", "replace")
+    print(ascii_text)
 
 def main():
     mail_sender = impl.mail.MailSender(smtplib, MIMEText)
@@ -301,5 +320,5 @@ def main():
             if len(mail_sender.dest):
                 _send_output_by_mail_if_necessary(mail_sender, output, "error")
         except:
-            print(error_msg.encode("utf-8"))
+            _print(error_msg)
         raise

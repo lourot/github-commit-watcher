@@ -31,4 +31,4 @@ class Output:
         Returns 'text' with no color if not self.colored.
         """
         text = unicode(text)
-        return text if not self.colored else "\033[" + str(color) + "m" + text + "\033[0m"
+        return text if not self.colored else "\033[" + unicode(color) + "m" + text + "\033[0m"

@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import encoding
+
 class MailSender:
     def __init__(self, smtplib, mimetextlib):
         """
@@ -18,7 +20,7 @@ class MailSender:
     def send_result(self, command, output):
         """Sends command output by e-mail.
         """
-        email = self.__mimetextlib(output, "plain", "utf-8")
+        email = self.__mimetextlib(output, "plain", encoding.preferred)
         email["Subject"] = "[gicowa] %s." % (command)
         email["From"] = self.sender
         email["To"] = ", ".join(self.dest)
