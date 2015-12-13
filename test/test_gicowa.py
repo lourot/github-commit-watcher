@@ -137,14 +137,14 @@ class GicowaTests(unittest.TestCase):
         actual = mock_stdout.printed
         self.assertEqual(actual, expected)
 
-    @mock.patch("gicowa.impl.mail.MailSender.send_result")
-    def test_mailto(self, send_result_mock):
+    @mock.patch("gicowa.impl.mail.MailSender.send_email")
+    def test_mailto(self, send_email_mock):
         mock_stdout = MockPrint()
         cli = gcw.Cli(("--no-color", "--mailto", "myMail@myDomain.com", "watchlist",
                        "myUsername"), MockGithubLib(), mail.MailSender(),
                       output.Output(mock_stdout.do_print))
         cli.run()
-        send_result_mock.assert_called_once_with("watchlist", """\
+        send_email_mock.assert_called_once_with("watchlist.", """\
 watchlist myUsername
 mySubscription1
 mySubscription2

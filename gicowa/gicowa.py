@@ -19,7 +19,7 @@ class Cli:
     def __init__(self, argv, githublib, mail_sender, output):
         """Main class.
         @param githublib: Dependency. Inject github.
-        @param mail_sender: Dependency. Inject an instance of impl.mail.MailSender.
+        @param mail_sender: Instance of impl.mail.MailSender.
         @param output: Dependency. Inject an instance of impl.output.Output.
         """
         self.errorto = None
@@ -120,7 +120,7 @@ class Cli:
             raise
 
         if len(self.__mail_sender.dest):
-            email_sent = _send_output_by_mail_if_necessary(self.__mail_sender, args.command,
+            email_sent = _send_output_by_mail_if_necessary(self.__mail_sender, args.command + ".",
                                                            self.__output)
             if not email_sent:
                 self.__output.echo("No e-mail sent.")
@@ -272,13 +272,13 @@ class Cli:
 
 def _send_output_by_mail_if_necessary(mail_sender, email_subject, output):
     """Returns True if an e-mail was sent.
-    @param mail_sender: Dependency. Inject an instance of impl.mail.MailSender.
+    @param mail_sender: Instance of impl.mail.MailSender.
     @param output: Dependency. Inject an instance of impl.output.Output.
     """
     if output.echoed.count("\n") <= 1:
         return False
     email_content = output.echoed + "\nSent from %s.\n" % (os.uname()[1])
-    mail_sender.send_result(email_subject, email_content)
+    mail_sender.send_email(email_subject, email_content)
     output.echo("Sent by e-mail to %s" % ", ".join(mail_sender.dest))
     return True
 
@@ -317,7 +317,7 @@ def main():
             if cli.errorto is not None:
                 mail_sender.dest.add(cli.errorto)
             if len(mail_sender.dest):
-                _send_output_by_mail_if_necessary(mail_sender, "error", output)
+                _send_output_by_mail_if_necessary(mail_sender, "error.", output)
         except:
             _print(error_msg)
         raise

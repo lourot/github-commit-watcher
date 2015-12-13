@@ -14,11 +14,9 @@ class MailSender:
         self.dest = set()
         self.password = None
 
-    def send_result(self, command, output):
-        """Sends command output by e-mail.
-        """
-        email = MIMEText(output, "plain", encoding.preferred)
-        email["Subject"] = "[gicowa] %s." % (command)
+    def send_email(self, subject, content):
+        email = MIMEText(content, "plain", encoding.preferred)
+        email["Subject"] = "[gicowa] %s" % (subject)
         email["From"] = self.sender
         email["To"] = ", ".join(self.dest)
         if self.port is None or self.password is None:
