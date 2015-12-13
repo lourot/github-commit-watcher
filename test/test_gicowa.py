@@ -64,20 +64,6 @@ class MockPrint:
     def do_print(self, text):
         self.printed += text + "\n"
 
-class MockMimetextlib:
-    class MockMimetext:
-        def __init__(self, content):
-            self.__content = content
-
-        def __setitem__(self, key, val):
-            pass
-
-        def as_string(self):
-            return self.__content
-
-    def __call__(self, content, subtype, charset):
-        return self.MockMimetext(content)
-
 class GicowaTests(unittest.TestCase):
     def test_output(self):
         mock_stdout = MockPrint()
@@ -101,7 +87,7 @@ class GicowaTests(unittest.TestCase):
 
     def test_watchlist(self):
         mock_stdout = MockPrint()
-        cli = gcw.Cli(("watchlist", "myUsername"), MockGithubLib(), mail.MailSender(None),
+        cli = gcw.Cli(("watchlist", "myUsername"), MockGithubLib(), mail.MailSender(),
                       output.Output(mock_stdout.do_print))
         cli.run()
         expected = "watchlist myUsername\n" \
@@ -113,8 +99,8 @@ class GicowaTests(unittest.TestCase):
 
     def test_nocolor(self):
         mock_stdout = MockPrint()
-        cli = gcw.Cli(("--no-color", "watchlist", "myUsername"), MockGithubLib(),
-                      mail.MailSender(None), output.Output(mock_stdout.do_print))
+        cli = gcw.Cli(("--no-color", "watchlist", "myUsername"), MockGithubLib(), mail.MailSender(),
+                      output.Output(mock_stdout.do_print))
         cli.run()
         expected = "watchlist myUsername\n" \
                  + "mySubscription1\n" \
@@ -126,7 +112,7 @@ class GicowaTests(unittest.TestCase):
     def test_lastrepocommits(self):
         mock_stdout = MockPrint()
         cli = gcw.Cli(("--no-color", "lastrepocommits", "myRepo", "since", "2015", "10", "11",
-                       "20", "08", "00"), MockGithubLib(), mail.MailSender(None),
+                       "20", "08", "00"), MockGithubLib(), mail.MailSender(),
                       output.Output(mock_stdout.do_print))
         cli.run()
         expected = "lastrepocommits myRepo since 2015-10-11 20:08:00\n" \
@@ -138,7 +124,7 @@ class GicowaTests(unittest.TestCase):
     def test_lastwatchedcommits(self):
         mock_stdout = MockPrint()
         cli = gcw.Cli(("--no-color", "lastwatchedcommits", "myUsername", "since", "2015", "10",
-                       "11", "20", "08", "00"), MockGithubLib(), mail.MailSender(None),
+                       "11", "20", "08", "00"), MockGithubLib(), mail.MailSender(),
                       output.Output(mock_stdout.do_print))
         cli.run()
         expected = "lastwatchedcommits myUsername since 2015-10-11 20:08:00\n" \
@@ -155,7 +141,7 @@ class GicowaTests(unittest.TestCase):
     def test_mailto(self, send_result_mock):
         mock_stdout = MockPrint()
         cli = gcw.Cli(("--no-color", "--mailto", "myMail@myDomain.com", "watchlist",
-                       "myUsername"), MockGithubLib(), mail.MailSender(MockMimetextlib()),
+                       "myUsername"), MockGithubLib(), mail.MailSender(),
                       output.Output(mock_stdout.do_print))
         cli.run()
         send_result_mock.assert_called_once_with("watchlist", """\

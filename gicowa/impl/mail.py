@@ -1,16 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from email.mime.text import MIMEText
 import smtplib
 
 import encoding
 
 class MailSender:
-    def __init__(self, mimetextlib):
-        """
-        @param mimetextlib: Dependency. Inject email.mime.text.MIMEText.
-        """
-        self.__mimetextlib = mimetextlib
+    def __init__(self):
         self.server = "localhost"
         self.port = None
         self.sender = "gicowa@lourot.com"
@@ -20,7 +17,7 @@ class MailSender:
     def send_result(self, command, output):
         """Sends command output by e-mail.
         """
-        email = self.__mimetextlib(output, "plain", encoding.preferred)
+        email = MIMEText(output, "plain", encoding.preferred)
         email["Subject"] = "[gicowa] %s." % (command)
         email["From"] = self.sender
         email["To"] = ", ".join(self.dest)

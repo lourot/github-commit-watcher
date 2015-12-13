@@ -7,7 +7,7 @@ import os
 import socket
 import sys
 import traceback
-from email.mime.text import MIMEText
+
 from __init__ import __version__
 import impl.encoding
 import impl.mail
@@ -304,7 +304,7 @@ def _print(text):
     print(ascii_text)
 
 def main():
-    mail_sender = impl.mail.MailSender(MIMEText)
+    mail_sender = impl.mail.MailSender()
     output = impl.output.Output(_print)
     cli = Cli(sys.argv[1:], github, mail_sender, output)
     try:
