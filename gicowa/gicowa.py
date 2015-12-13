@@ -292,7 +292,7 @@ def _print(text):
         unicode_text = text.decode(impl.encoding.preferred, "replace")
 
     try:
-        print(text)
+        print(unicode_text)
         return
     except UnicodeDecodeError:
         pass
