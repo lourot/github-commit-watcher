@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import smtplib
+
 import encoding
 
 class MailSender:
-    def __init__(self, smtplib, mimetextlib):
+    def __init__(self, mimetextlib):
         """
-        @param smtplib: Dependency. Inject smtplib.
         @param mimetextlib: Dependency. Inject email.mime.text.MIMEText.
         """
-        self.__smtplib = smtplib
         self.__mimetextlib = mimetextlib
         self.server = "localhost"
         self.port = None
@@ -25,13 +25,13 @@ class MailSender:
         email["From"] = self.sender
         email["To"] = ", ".join(self.dest)
         if self.port is None or self.password is None:
-            smtp = self.__smtplib.SMTP(self.server)
+            smtp = smtplib.SMTP(self.server)
         else:
-            smtp = self.__smtplib.SMTP_SSL(self.server, self.port)
+            smtp = smtplib.SMTP_SSL(self.server, self.port)
             smtp.login(self.sender, self.password)
         try:
             smtp.sendmail(self.sender, self.dest, email.as_string())
-        except self.__smtplib.SMTPRecipientsRefused as e:
+        except smtplib.SMTPRecipientsRefused as e:
             e.args += ("%s addresses malformed?" % ", ".join(self.dest),)
             raise
         smtp.quit()

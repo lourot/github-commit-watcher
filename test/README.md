@@ -3,6 +3,7 @@
 ```
 # From this directory:
 $ cd ../
+$ sudo pip install -r requirements.txt
 $ python -m unittest discover -v
 ```
 

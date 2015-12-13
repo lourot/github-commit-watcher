@@ -5,7 +5,6 @@ import argparse
 import github
 import os
 import socket
-import smtplib
 import sys
 import traceback
 from email.mime.text import MIMEText
@@ -305,7 +304,7 @@ def _print(text):
     print(ascii_text)
 
 def main():
-    mail_sender = impl.mail.MailSender(smtplib, MIMEText)
+    mail_sender = impl.mail.MailSender(MIMEText)
     output = impl.output.Output(_print)
     cli = Cli(sys.argv[1:], github, mail_sender, output)
     try:

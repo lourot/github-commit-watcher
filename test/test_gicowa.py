@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 
+import codecs
+import mock
+import os
+import sys
+import unittest
+
 import gicowa.gicowa as gcw
 import gicowa.impl.mail as mail
 import gicowa.impl.output as output
 from gicowa.impl.timestamp import Timestamp
-import codecs
-import os
-import sys
-import unittest
 
 class MockGithubLib:
     class GithubException:
@@ -62,30 +64,6 @@ class MockPrint:
     def do_print(self, text):
         self.printed += text + "\n"
 
-class MockSmtplib:
-    class SMTPRecipientsRefused:
-        pass
-
-    class MockSmtp:
-        def __init__(self):
-            self.sent = None
-            self.sentfrom = None
-            self.sentto = None
-
-        def sendmail(self, sender, dest, content):
-            self.sent = content
-            self.sentfrom = sender
-            self.sentto = dest
-
-        def quit(self):
-            pass
-
-    def __init__(self):
-        self.smtp = self.MockSmtp()
-
-    def SMTP(self, server):
-        return self.smtp
-
 class MockMimetextlib:
     class MockMimetext:
         def __init__(self, content):
@@ -123,7 +101,7 @@ class GicowaTests(unittest.TestCase):
 
     def test_watchlist(self):
         mock_stdout = MockPrint()
-        cli = gcw.Cli(("watchlist", "myUsername"), MockGithubLib(), mail.MailSender(None, None),
+        cli = gcw.Cli(("watchlist", "myUsername"), MockGithubLib(), mail.MailSender(None),
                       output.Output(mock_stdout.do_print))
         cli.run()
         expected = "watchlist myUsername\n" \
@@ -136,7 +114,7 @@ class GicowaTests(unittest.TestCase):
     def test_nocolor(self):
         mock_stdout = MockPrint()
         cli = gcw.Cli(("--no-color", "watchlist", "myUsername"), MockGithubLib(),
-                      mail.MailSender(None, None), output.Output(mock_stdout.do_print))
+                      mail.MailSender(None), output.Output(mock_stdout.do_print))
         cli.run()
         expected = "watchlist myUsername\n" \
                  + "mySubscription1\n" \
@@ -148,7 +126,7 @@ class GicowaTests(unittest.TestCase):
     def test_lastrepocommits(self):
         mock_stdout = MockPrint()
         cli = gcw.Cli(("--no-color", "lastrepocommits", "myRepo", "since", "2015", "10", "11",
-                       "20", "08", "00"), MockGithubLib(), mail.MailSender(None, None),
+                       "20", "08", "00"), MockGithubLib(), mail.MailSender(None),
                       output.Output(mock_stdout.do_print))
         cli.run()
         expected = "lastrepocommits myRepo since 2015-10-11 20:08:00\n" \
@@ -160,7 +138,7 @@ class GicowaTests(unittest.TestCase):
     def test_lastwatchedcommits(self):
         mock_stdout = MockPrint()
         cli = gcw.Cli(("--no-color", "lastwatchedcommits", "myUsername", "since", "2015", "10",
-                       "11", "20", "08", "00"), MockGithubLib(), mail.MailSender(None, None),
+                       "11", "20", "08", "00"), MockGithubLib(), mail.MailSender(None),
                       output.Output(mock_stdout.do_print))
         cli.run()
         expected = "lastwatchedcommits myUsername since 2015-10-11 20:08:00\n" \
@@ -173,21 +151,21 @@ class GicowaTests(unittest.TestCase):
         actual = mock_stdout.printed
         self.assertEqual(actual, expected)
 
-    def test_mailto(self):
+    @mock.patch("gicowa.impl.mail.MailSender.send_result")
+    def test_mailto(self, send_result_mock):
         mock_stdout = MockPrint()
-        mock_smtplib = MockSmtplib()
         cli = gcw.Cli(("--no-color", "--mailto", "myMail@myDomain.com", "watchlist",
-                       "myUsername"), MockGithubLib(),
-                      mail.MailSender(mock_smtplib, MockMimetextlib()),
+                       "myUsername"), MockGithubLib(), mail.MailSender(MockMimetextlib()),
                       output.Output(mock_stdout.do_print))
         cli.run()
-        expected = "watchlist myUsername\n" \
-                 + "mySubscription1\n" \
-                 + "mySubscription2\n" \
-                 + "mySubscription3\n" \
-                 + "\nSent from %s.\n" % (os.uname()[1])
-        actual = mock_smtplib.smtp.sent
-        self.assertIn(expected, actual)
+        send_result_mock.assert_called_once_with("watchlist", """\
+watchlist myUsername
+mySubscription1
+mySubscription2
+mySubscription3
+
+Sent from %s.
+""" % (os.uname()[1]))
 
     def test_print_utf8_string(self):
         utf8_string = "Tschüß!"
