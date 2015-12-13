@@ -120,8 +120,8 @@ class Cli:
             raise
 
         if len(self.__mail_sender.dest):
-            email_sent = _send_output_by_mail_if_necessary(self.__mail_sender, self.__output,
-                                                           args.command)
+            email_sent = _send_output_by_mail_if_necessary(self.__mail_sender, args.command,
+                                                           self.__output)
             if not email_sent:
                 self.__output.echo("No e-mail sent.")
 
@@ -270,7 +270,7 @@ class Cli:
 
     _persist_option = "--persist"
 
-def _send_output_by_mail_if_necessary(mail_sender, output, email_subject):
+def _send_output_by_mail_if_necessary(mail_sender, email_subject, output):
     """Returns True if an e-mail was sent.
     @param mail_sender: Dependency. Inject an instance of impl.mail.MailSender.
     @param output: Dependency. Inject an instance of impl.output.Output.
@@ -317,7 +317,7 @@ def main():
             if cli.errorto is not None:
                 mail_sender.dest.add(cli.errorto)
             if len(mail_sender.dest):
-                _send_output_by_mail_if_necessary(mail_sender, output, "error")
+                _send_output_by_mail_if_necessary(mail_sender, "error", output)
         except:
             _print(error_msg)
         raise
