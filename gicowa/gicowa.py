@@ -16,6 +16,37 @@ import impl.output
 import impl.persistence
 from impl.timestamp import Timestamp
 
+def _since_command(command_argname):
+    """Decorator for Cli commands that require a 'since' argument.
+
+    @param command_argname: Name of args's property containing args's command argument.
+    """
+    def wrapper(func):
+        def decorated(self, args):
+            """
+            @param args: from argparse.
+            """
+            now = Timestamp()
+            command = args.command + " " + getattr(args, command_argname)
+            if not args.sincelast:
+                since = Timestamp(args)
+            else:
+                try:
+                    since = Timestamp(self._memory.timestamps[command])
+                except KeyError: # this command gets executed for the first time
+                    since = now
+            self._output.echo(command + " since " + unicode(since))
+
+            result = func(self, args, since)
+
+            # Remember this last execution:
+            self._memory.timestamps[command] = now.data
+
+            return result
+
+        return decorated
+    return wrapper
+
 class Cli:
     def __init__(self, argv, mail_sender, output):
         """Main class.
@@ -26,8 +57,8 @@ class Cli:
         self.__argv = argv
         self.__github = None
         self.__mail_sender = mail_sender
-        self.__output = output
-        self.__memory = impl.persistence.Memory()
+        self._output = output
+        self._memory = impl.persistence.Memory()
 
     def run(self):
         parser = argparse.ArgumentParser(description="watch GitHub commits easily")
@@ -53,7 +84,7 @@ class Cli:
 
         parser.add_argument(self._persist_option, action="store_true",
                     help="gicowa will keep track of the last commands run in %s" %
-                            (self.__memory.filename))
+                            (self._memory.filename))
 
         subparsers = parser.add_subparsers(help="available commands")
 
@@ -94,7 +125,7 @@ class Cli:
             self.__mail_sender.dest.add(args.mailto)
         self.errorto = args.errorto
 
-        self.__output.colored = not args.no_color
+        self._output.colored = not args.no_color
 
         if args.credentials is not None:
             credentials = args.credentials.split(":", 1)
@@ -120,12 +151,12 @@ class Cli:
 
         if len(self.__mail_sender.dest):
             email_sent = _send_output_by_mail_if_necessary(self.__mail_sender, args.command + ".",
-                                                           self.__output)
+                                                           self._output)
             if not email_sent:
-                self.__output.echo("No e-mail sent.")
+                self._output.echo("No e-mail sent.")
 
         if args.persist:
-            self.__memory.save()
+            self._memory.save()
 
     @staticmethod
     def _add_argument_watcher_name(parser):
@@ -158,41 +189,10 @@ class Cli:
         @param args: from argparse.
         """
         command = args.command + " " + args.username
-        self.__output.echo(command)
+        self._output.echo(command)
 
         for repo in self.__get_watchlist(args.username):
-            self.__output.echo(self.__output.red(repo))
-
-    def _since_command(command_argname):
-        """Decorator for commands that require a 'since' argument.
-
-        @param command_argname: Name of args's property containing args's command argument.
-        """
-        def wrapper(func):
-            def decorated(self, args):
-                """
-                @param args: from argparse.
-                """
-                now = Timestamp()
-                command = args.command + " " + getattr(args, command_argname)
-                if not args.sincelast:
-                    since = Timestamp(args)
-                else:
-                    try:
-                        since = Timestamp(self.__memory.timestamps[command])
-                    except KeyError: # this command gets executed for the first time
-                        since = now
-                self.__output.echo(command + " since " + unicode(since))
-
-                result = func(self, args, since)
-
-                # Remember this last execution:
-                self.__memory.timestamps[command] = now.data
-
-                return result
-
-            return decorated
-        return wrapper
+            self._output.echo(self._output.red(repo))
 
     @_since_command("repo")
     def __lastrepocommits(self, args, since):
@@ -205,9 +205,9 @@ class Cli:
         """
         pushed = self.__has_been_pushed(args.repo, since.to_datetime())
         if pushed is not None:
-            self.__output.echo(pushed)
+            self._output.echo(pushed)
         for commit in self.__get_last_commits(args.repo, since.to_datetime()):
-            self.__output.echo(commit)
+            self._output.echo(commit)
 
     @_since_command("username")
     def __lastwatchedcommits(self, args, since):
@@ -221,9 +221,9 @@ class Cli:
         for repo in self.__get_watchlist(args.username):
             pushed = self.__has_been_pushed(repo, since.to_datetime())
             if pushed is not None:
-                self.__output.echo("%s - %s" % (self.__output.red(repo), pushed))
+                self._output.echo("%s - %s" % (self._output.red(repo), pushed))
             for commit in self.__get_last_commits(repo, since.to_datetime()):
-                self.__output.echo("%s - %s" % (self.__output.red(repo), commit))
+                self._output.echo("%s - %s" % (self._output.red(repo), commit))
 
     def __get_watchlist(self, username):
         """Returns list of all watched repos of 'username'.
@@ -246,8 +246,8 @@ class Cli:
         for i in repo.get_commits(since=since):
             commit = repo.get_git_commit(i.sha)
             result.append("Committed on %s - %s - %s"
-                          % (self.__output.green(commit.committer.date),
-                             self.__output.blue(commit.committer.name), commit.message))
+                          % (self._output.green(commit.committer.date),
+                             self._output.blue(commit.committer.name), commit.message))
         return result
 
     def __has_been_pushed(self, repo_full_name, since):
@@ -256,7 +256,7 @@ class Cli:
         """
         repo = self.__get_repo(repo_full_name)
         if repo.pushed_at >= since:
-            return "Last commit pushed on " + self.__output.green(repo.pushed_at)
+            return "Last commit pushed on " + self._output.green(repo.pushed_at)
 
     def __get_repo(self, full_name):
         """Returns github repository. Raises if couldn't be found.

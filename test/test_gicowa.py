@@ -11,7 +11,7 @@ import github
 import gicowa.gicowa as gcw
 import gicowa.impl.mail as mail
 import gicowa.impl.output as output
-from gicowa.impl.timestamp import Timestamp
+import gicowa.impl.timestamp as timestamp
 
 class MockPrint:
     def __init__(self):
@@ -24,6 +24,7 @@ class GicowaTests(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super(GicowaTests, self).__init__(*args, **kwargs)
         self.__mock_github = mock.Mock()
+        self.__mock_github_user = mock.Mock()
 
     def setUp(self):
         mock_committer = lambda: None # ~ object with no properties (yet)
@@ -44,12 +45,12 @@ class GicowaTests(unittest.TestCase):
         for i in xrange(1, 3+1):
             repo = mock.Mock()
             repo.full_name = "mySubscription" + str(i)
-            repo.pushed_at = Timestamp({"YYYY": 2015,
-                                        "MM":   10,
-                                        "DD":   11,
-                                        "hh":   20,
-                                        "mm":   22,
-                                        "ss":   24}).to_datetime()
+            repo.pushed_at = timestamp.Timestamp({"YYYY": 2015,
+                                                  "MM":   10,
+                                                  "DD":   11,
+                                                  "hh":   20,
+                                                  "mm":   22,
+                                                  "ss":   24}).to_datetime()
             repo.get_commits = get_commits
             repo.get_git_commit = get_git_commit
             repos.append(repo)
@@ -59,9 +60,8 @@ class GicowaTests(unittest.TestCase):
                 if repo.full_name == full_name:
                     return repo
 
-        mock_github_user = mock.Mock()
-        mock_github_user.get_subscriptions.return_value = repos
-        self.__mock_github.get_user.return_value = mock_github_user
+        self.__mock_github_user.get_subscriptions.return_value = repos
+        self.__mock_github.get_user.return_value = self.__mock_github_user
         self.__mock_github.get_repo = get_repo
 
         self.__mock_github.get_user.side_effect = None
@@ -76,12 +76,12 @@ class GicowaTests(unittest.TestCase):
         self.assertEqual(out.echoed, mock_stdout.printed)
 
     def test_timestamp(self):
-        stamp = Timestamp({"YYYY": 2015,
-                           "MM":   10,
-                           "DD":   11,
-                           "hh":   20,
-                           "mm":   22,
-                           "ss":   24})
+        stamp = timestamp.Timestamp({"YYYY": 2015,
+                                     "MM":   10,
+                                     "DD":   11,
+                                     "hh":   20,
+                                     "mm":   22,
+                                     "ss":   24})
         expected = "2015-10-11 20:22:24"
         actual = unicode(stamp)
         self.assertEqual(actual, expected)
@@ -164,6 +164,19 @@ Sent from %s.
 """ % (os.uname()[1]))
 
     @mock.patch("github.Github")
+    def test_no_email_sent(self, mock_github_constructor):
+        mock_github_constructor.return_value = self.__mock_github
+        self.__mock_github_user.get_subscriptions.return_value = ()
+        mock_stdout = MockPrint()
+        cli = gcw.Cli(("--no-color", "--mailto", "myMail@myDomain.com", "watchlist",
+                       "myUsername"), mail.MailSender(), output.Output(mock_stdout.do_print))
+        cli.run()
+        expected = "watchlist myUsername\n" \
+                 + "No e-mail sent.\n"
+        actual = mock_stdout.printed
+        self.assertEqual(actual, expected)
+
+    @mock.patch("github.Github")
     def test_credentials(self, mock_github_constructor):
         mock_github_constructor.return_value = self.__mock_github
         mock_stdout = MockPrint()
@@ -200,6 +213,80 @@ Sent from %s.
         cli = gcw.Cli(("lastrepocommits", "mySubscription1", "since", "2015", "10", "11", "20",
                        "08", "00"), mail.MailSender(), output.Output(mock_stdout.do_print))
         with self.assertRaises(github.GithubException):
+            cli.run()
+
+    @mock.patch("gicowa.impl.persistence.Memory.save")
+    @mock.patch("github.Github")
+    def test_persist(self, mock_github_constructor, mock_save):
+        mock_github_constructor.return_value = self.__mock_github
+        mock_stdout = MockPrint()
+        cli = gcw.Cli(
+            ("--persist", "lastrepocommits", "mySubscription1", "since", "2015", "10", "11", "20",
+             "08", "00"), mail.MailSender(), output.Output(mock_stdout.do_print))
+        cli.run()
+        mock_save.assert_called_once_with()
+
+    def test_sincelast(self):
+        """Tests the sincelast functionality in _since_command decorator.
+        """
+        now = lambda: None # ~ object with no properties (yet)
+        now.year =   2015
+        now.month =  12
+        now.day =    20
+        now.hour =   19
+        now.minute = 46
+        now.second = 24
+
+        # See http://www.voidspace.org.uk/python/mock/examples.html#partial-mocking :
+        with mock.patch("gicowa.impl.timestamp.datetime.datetime") as mock_datetime:
+            mock_datetime.utcnow.return_value = now
+
+            class MyCli:
+                def __init__(self):
+                    self._output = output.Output(MockPrint().do_print)
+                    self._memory = lambda: None # ~ object with no properties (yet)
+                    self._memory.timestamps = {"my_command my_argument1": {"YYYY": 2015,
+                                                                           "MM":   10,
+                                                                           "DD":   11,
+                                                                           "hh":   20,
+                                                                           "mm":   22,
+                                                                           "ss":   24}}
+
+                    self.last_result = None
+
+                @gcw._since_command("my_argument")
+                def my_command(self, args, since):
+                    self.last_result = since
+
+            args = lambda: None # ~ object with no properties (yet)
+            args.command = "my_command"
+            args.my_argument = "my_argument1"
+            args.sincelast = True
+
+            # Last command in memory:
+            my_cli = MyCli()
+            my_cli.my_command(args)
+            self.assertEqual(my_cli.last_result, timestamp.Timestamp({"YYYY": 2015,
+                                                                      "MM":   10,
+                                                                      "DD":   11,
+                                                                      "hh":   20,
+                                                                      "mm":   22,
+                                                                      "ss":   24}))
+
+            # Last command not in memory:
+            args.my_argument = "my_argument2"
+            my_cli.my_command(args)
+            self.assertEqual(my_cli.last_result, timestamp.Timestamp({"YYYY": 2015,
+                                                                      "MM":   12,
+                                                                      "DD":   20,
+                                                                      "hh":   19,
+                                                                      "mm":   46,
+                                                                      "ss":   24}))
+
+    def test_help(self):
+        mock_stdout = MockPrint()
+        cli = gcw.Cli(("--help",), mail.MailSender(), output.Output(mock_stdout.do_print))
+        with self.assertRaises(SystemExit):
             cli.run()
 
     def test_print_utf8_string(self):
