@@ -17,15 +17,13 @@ import impl.persistence
 from impl.timestamp import Timestamp
 
 class Cli:
-    def __init__(self, argv, githublib, mail_sender, output):
+    def __init__(self, argv, mail_sender, output):
         """Main class.
-        @param githublib: Dependency. Inject github.
         @param mail_sender: Instance of impl.mail.MailSender.
         @param output: Instance of impl.output.Output.
         """
         self.errorto = None
         self.__argv = argv
-        self.__githublib = githublib
         self.__github = None
         self.__mail_sender = mail_sender
         self.__output = output
@@ -101,16 +99,16 @@ class Cli:
         if args.credentials is not None:
             credentials = args.credentials.split(":", 1)
             try:
-                self.__github = self.__githublib.Github(credentials[0], credentials[1])
+                self.__github = github.Github(credentials[0], credentials[1])
             except IndexError as e:
                 e.args += ("Bad credentials' syntax.",)
                 raise
         else:
-            self.__github = self.__githublib.Github()
+            self.__github = github.Github()
 
         try:
             args.impl(args)
-        except self.__githublib.GithubException as e:
+        except github.GithubException as e:
             if e.status == 401 and args.credentials is not None:
                 e.args += ("Bad credentials?",)
             if e.status == 403 and args.credentials is None:
@@ -232,7 +230,7 @@ class Cli:
         """
         try:
             user = self.__github.get_user(username)
-        except self.__githublib.GithubException as e:
+        except github.GithubException as e:
             if e.status == 404:
                 e.args += ("%s user doesn't exist?" % (username),)
             raise
@@ -265,7 +263,7 @@ class Cli:
         """
         try:
             return self.__github.get_repo(full_name)
-        except self.__githublib.GithubException as e:
+        except github.GithubException as e:
             if e.status == 404:
                 e.args += ("%s repo doesn't exist?" % (full_name),)
             raise
@@ -308,7 +306,7 @@ def _print(text):
 def main():
     mail_sender = impl.mail.MailSender()
     output = impl.output.Output(_print)
-    cli = Cli(sys.argv[1:], github, mail_sender, output)
+    cli = Cli(sys.argv[1:], mail_sender, output)
     try:
         cli.run()
     except Exception as e:
