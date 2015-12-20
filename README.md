@@ -6,6 +6,8 @@ $ ./scripts/gen_doc.sh
 
 Official documentation [here](http://lourot.com/gicowa).
 
+[![Build Status](https://travis-ci.org/AurelienLourot/github-commit-watcher.svg?branch=master)](https://travis-ci.org/AurelienLourot/github-commit-watcher)
+
 # gicowa.py - GitHub Commit Watcher
 
 GitHub's _Watch_ feature doesn't send notifications when commits are pushed.

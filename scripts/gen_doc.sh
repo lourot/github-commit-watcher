@@ -8,6 +8,8 @@ echo "-->"                                                      >> README.md
 echo ""                                                         >> README.md
 echo "Official documentation [here](http://lourot.com/gicowa)." >> README.md
 echo ""                                                         >> README.md
+echo "[![Build Status](https://travis-ci.org/AurelienLourot/github-commit-watcher.svg?branch=master)](https://travis-ci.org/AurelienLourot/github-commit-watcher)" >> README.md
+echo ""                                                         >> README.md
 html2text README.html                                           >> README.md
 
 echo ""                                                              > README
