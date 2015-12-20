@@ -2,11 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-import github
 import os
 import socket
 import sys
 import traceback
+
+import github
 
 from __init__ import __version__
 import impl.encoding
@@ -20,7 +21,7 @@ class Cli:
         """Main class.
         @param githublib: Dependency. Inject github.
         @param mail_sender: Instance of impl.mail.MailSender.
-        @param output: Dependency. Inject an instance of impl.output.Output.
+        @param output: Instance of impl.output.Output.
         """
         self.errorto = None
         self.__argv = argv
@@ -128,8 +129,8 @@ class Cli:
         if args.persist:
             self.__memory.save()
 
-    @classmethod
-    def _add_argument_watcher_name(cls, parser):
+    @staticmethod
+    def _add_argument_watcher_name(parser):
         """Adds an argument corresponding to a watcher's user name to an argparse parser.
         """
         parser.add_argument("username", help="watcher's name (e.g. 'AurelienLourot')")
@@ -181,7 +182,7 @@ class Cli:
                 else:
                     try:
                         since = Timestamp(self.__memory.timestamps[command])
-                    except KeyError as e: # this command gets executed for the first time
+                    except KeyError: # this command gets executed for the first time
                         since = now
                 self.__output.echo(command + " since " + unicode(since))
 
@@ -239,7 +240,8 @@ class Cli:
         return [repo.full_name for repo in user.get_subscriptions()]
 
     def __get_last_commits(self, repo_full_name, since):
-        """Returns list of all commits on 'repo_full_name' with committer timestamp bigger than 'since'.
+        """Returns list of all commits on 'repo_full_name' with committer timestamp bigger than
+        'since'.
         """
         repo = self.__get_repo(repo_full_name)
         result = []

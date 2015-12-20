@@ -4,7 +4,8 @@
 class Output:
     def __init__(self, print_function):
         """
-        @param print_function: Dependency. Inject print.
+        @param print_function: Dependency. Inject a function implementing the same interface as
+                               print().
         """
         self.__print_function = print_function
         self.colored = True
