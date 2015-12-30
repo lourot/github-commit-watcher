@@ -182,6 +182,7 @@ non-spam in your e-mail client. Or use the `--mailfrom` option.
 
 The following projects provide similar functionalities:
 
+  * [IFTTT](https://ifttt.com/), see [this post](http://www.warski.org/blog/2013/04/per-commit-e-mail-github-notifications/).
   * [Zapier](https://zapier.com/), however you have to create a "Zap" for each single project you want to watch. See [this thread](http://webapps.stackexchange.com/questions/62701/github-receive-updates-of-starred-projects-via-email-of-commits-on-master-branch).
   * [HubNotify](http://hubnotify.com), however it'll notify you only for new tags, not new commits.
 
