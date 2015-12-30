@@ -178,3 +178,10 @@ non-spam in your e-mail client. Or use the `--mailfrom` option.
   * [Aurelien Lourot](http://lourot.com/)
   * [cassiodoroVicinetti](https://github.com/cassiodoroVicinetti)
 
+## Similar projects
+
+The following projects provide similar functionalities:
+
+  * [Zapier](https://zapier.com/), however you have to create a "Zap" for each single project you want to watch. See [this thread](http://webapps.stackexchange.com/questions/62701/github-receive-updates-of-starred-projects-via-email-of-commits-on-master-branch).
+  * [HubNotify](http://hubnotify.com), however it'll notify you only for new tags, not new commits.
+
