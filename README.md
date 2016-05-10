@@ -13,6 +13,10 @@ Official documentation [here](http://lourot.com/gicowa).
 GitHub's _Watch_ feature doesn't send notifications when commits are pushed.
 This script aims to implement this feature and much more.
 
+> **Call for maintainers:** I don't use this project myself anymore but IFTTT
+instead (see below). If you're interested in taking over the maintenance of
+this project, or just helping, please let me know (e.g. by opening an issue).
+
 ## Installation
 
     
