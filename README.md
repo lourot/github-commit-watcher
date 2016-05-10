@@ -74,8 +74,18 @@ shows what it can.
 
 * * *
 
-> **NOTE:** keep in mind that a commit's _committer timestamp_ isn't the time
-at which it gets pushed.
+> **NOTES:**
+
+>
+
+>   * Keep in mind that a commit's _committer timestamp_ isn't the time at
+which it gets pushed.
+
+>   * The lines starting with `Committed on` list commits on the `master`
+branch only. Their timestamps are the _committer timestamps_.
+
+>   * The line starting with `Last commit pushed on` shows the time at which a
+commit got pushed on the repository for the last time on any branch.
 
 ### List last commits on repos watched by a user
 

@@ -19,5 +19,5 @@ echo ""                                                             >> README
 echo ""                                                             >> README
 echo "Official documentation \`here <http://lourot.com/gicowa>\`_." >> README
 echo ""                                                             >> README
-# apt-get install pandoc # 1.9.1.1
+# apt-get install pandoc # 1.12.2.1
 pandoc --from=html --to=rst < README.html                           >> README

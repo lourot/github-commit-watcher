@@ -73,8 +73,16 @@ List last commits on a repo
 
 --------------
 
-    **NOTE:** keep in mind that a commit's *committer timestamp* isn't
-    the time at which it gets pushed.
+    **NOTES:**
+
+    -  Keep in mind that a commit's *committer timestamp* isn't the time
+       at which it gets pushed.
+    -  The lines starting with ``Committed on`` list commits on the
+       ``master`` branch only. Their timestamps are the *committer
+       timestamps*.
+    -  The line starting with ``Last commit pushed on`` shows the time
+       at which a commit got pushed on the repository for the last time
+       on any branch.
 
 List last commits on repos watched by a user
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -176,20 +184,20 @@ Changelog
 Contributors
 ------------
 
--  `Aurelien Lourot <http://lourot.com/>`_
--  `cassiodoroVicinetti <https://github.com/cassiodoroVicinetti>`_
+-  `Aurelien Lourot <http://lourot.com/>`__
+-  `cassiodoroVicinetti <https://github.com/cassiodoroVicinetti>`__
 
 Similar projects
 ----------------
 
 The following projects provide similar functionalities:
 
--  `IFTTT <https://ifttt.com/>`_, see `this
-   post <http://www.warski.org/blog/2013/04/per-commit-e-mail-github-notifications/>`_.
--  `Zapier <https://zapier.com/>`_, however you have to create a "Zap"
+-  `IFTTT <https://ifttt.com/>`__, see `this
+   post <http://www.warski.org/blog/2013/04/per-commit-e-mail-github-notifications/>`__.
+-  `Zapier <https://zapier.com/>`__, however you have to create a "Zap"
    for each single project you want to watch. See `this
-   thread <http://webapps.stackexchange.com/questions/62701/github-receive-updates-of-starred-projects-via-email-of-commits-on-master-branch>`_.
--  `HubNotify <http://hubnotify.com/>`_ and
-   `Sibbell <https://sibbell.com/>`_, however they will notify you only
+   thread <http://webapps.stackexchange.com/questions/62701/github-receive-updates-of-starred-projects-via-email-of-commits-on-master-branch>`__.
+-  `HubNotify <http://hubnotify.com/>`__ and
+   `Sibbell <https://sibbell.com/>`__, however they will notify you only
    for new tags, not new commits.
 
