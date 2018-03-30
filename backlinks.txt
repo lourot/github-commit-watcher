@@ -1,0 +1,6 @@
+https://stackoverflow.com/questions/8371173/how-to-get-notified-when-someone-pushes-into-a-github-branch/31373602#31373602
+http://www.systutorials.com/1473/setting-up-git-commit-email-notification/
+http://webapps.stackexchange.com/questions/43787/watch-commits-made-to-followed-github-repositories-in-the-dashboard/80176#80176
+https://www.quora.com/Whats-a-good-way-of-generating-commit-emails-from-GitHub
+http://stackoverflow.com/questions/9845655/how-do-i-get-notifications-for-commits-to-the-framework/34529361#34529361
+http://webapps.stackexchange.com/questions/62701/github-receive-updates-of-starred-projects-via-email-of-commits-on-master-branch
