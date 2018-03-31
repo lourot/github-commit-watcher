@@ -58,7 +58,7 @@ shows what it can.
     
     $ gicowa watchlist AurelienLourot
     watchlist AurelienLourot
-    AurelienLourot/uncommitted
+    brandon-rhodes/uncommitted
     AurelienLourot/crouton-emacs-conf
     brillout/FasterWeb
     AurelienLourot/github-commit-watcher
