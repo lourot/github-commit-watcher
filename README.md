@@ -198,5 +198,5 @@ The following projects provide similar functionalities:
 
   * [IFTTT](https://ifttt.com/), see [this post](http://www.warski.org/blog/2013/04/per-commit-e-mail-github-notifications/).
   * [Zapier](https://zapier.com/), however you have to create a "Zap" for each single project you want to watch. See [this thread](http://webapps.stackexchange.com/questions/62701/github-receive-updates-of-starred-projects-via-email-of-commits-on-master-branch).
-  * [HubNotify](http://hubnotify.com/) and [Sibbell](https://sibbell.com/), however they will notify you only for new tags, not new commits.
+  * [HubNotify](http://hubnotify.com/), however you will be notified only for new tags, not new commits.
 
