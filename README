@@ -3,7 +3,7 @@
    $ ./scripts/gen_doc.sh
 
 
-Official documentation `here <http://lourot.com/gicowa>`_.
+Official documentation `here <http://a.ghuser.io/gicowa>`_.
 
 gicowa.py - GitHub Commit Watcher
 =================================
@@ -189,7 +189,7 @@ Changelog
 Contributors
 ------------
 
--  `Aurelien Lourot <http://lourot.com/>`__
+-  `Aurelien Lourot <https://ghuser.io/AurelienLourot>`__
 -  `cassiodoroVicinetti <https://github.com/cassiodoroVicinetti>`__
 
 Similar projects

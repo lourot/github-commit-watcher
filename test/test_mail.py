@@ -24,7 +24,7 @@ class MailTests(unittest.TestCase):
 
         expected_email = MIMEText(content, "plain", "utf-8")
         expected_email["Subject"] = "[gicowa] %s" % (subject)
-        expected_email["From"] = "gicowa@lourot.com"
+        expected_email["From"] = "gicowa@ghuser.io"
         expected_email["To"] = ", ".join(dest)
-        mock_smtp.sendmail.assert_called_once_with("gicowa@lourot.com", dest,
+        mock_smtp.sendmail.assert_called_once_with("gicowa@ghuser.io", dest,
                                                    expected_email.as_string())

@@ -10,7 +10,7 @@ class MailSender:
     def __init__(self):
         self.server = "localhost"
         self.port = None
-        self.sender = "gicowa@lourot.com"
+        self.sender = "gicowa@ghuser.io"
         self.dest = set()
         self.password = None
 

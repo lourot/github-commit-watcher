@@ -52,7 +52,7 @@ $ git tag "7.8.9"
 $ git push --tags
 ```
 
-And check that the resulting [official documentation](http://lourot.com/gicowa) looks well-formed.
+And check that the resulting [official documentation](http://a.ghuser.io/gicowa) looks well-formed.
 
 ## Push the package to PyPI Test
 

@@ -6,7 +6,7 @@ $ ./scripts/gen_doc.sh
 
 [![Build Status](https://travis-ci.org/AurelienLourot/github-commit-watcher.svg?branch=master)](https://travis-ci.org/AurelienLourot/github-commit-watcher)
 
-Official documentation [here](http://lourot.com/gicowa).
+Official documentation [here](http://a.ghuser.io/gicowa).
 
 # gicowa.py - GitHub Commit Watcher
 
@@ -189,7 +189,7 @@ non-spam in your e-mail client. Or use the `--mailfrom` option.
 
 ## Contributors
 
-  * [Aurelien Lourot](http://lourot.com/)
+  * [Aurelien Lourot](https://ghuser.io/AurelienLourot)
   * [cassiodoroVicinetti](https://github.com/cassiodoroVicinetti)
 
 ## Similar projects
