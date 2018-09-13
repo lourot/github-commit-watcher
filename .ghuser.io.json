@@ -1,5 +1,5 @@
 {
-  "_comment": "Repo metadata for ghuser.io. See https://github.com/AurelienLourot/ghuser.io/blob/master/docs/repo-settings.md",
+  "_comment": "Repo metadata for ghuser.io. See https://github.com/ghuser-io/ghuser.io/blob/master/docs/repo-settings.md",
   "avatar_url": "https://rawgit.com/AurelienLourot/github-commit-watcher/master/github_icon.png",
   "techs": ["GitHub API", "Travis CI"]
 }
